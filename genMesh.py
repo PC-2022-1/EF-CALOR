@@ -1,4 +1,5 @@
-#Archivo principal de generación de mallas
+#Archivo principal de generación de mallas. 
+#Este archivo importa de Mesh 
 
 import numpy as np
 import matplotlib.pyplot as plt

@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 def uniform_mesh(d1,d2,p,m,element_type):
     PD=2
     q=np.array([[0,0],[d1,0],[0,d2],[d1,d2]]) #4 esquinas
-    NoN= (p+1)*(m+1)
-    NoE= p*m
-    NPE=4
+    numeroDeNodos= (p+1)*(m+1)
+    numeroDeElementos= p*m
+    nodosPorElemento=4
             ##Nodos##
-    NL=np.zeros([NoN,PD])
+    NL=np.zeros([numeroDeNodos,PD])
     a= (q[1,0]-q[0,0])/p    #incremento horizontal #a= d1/p
     b= (q[2,1]-q[0,1])/m    #incremento vertical  #b= d2/m
     
@@ -21,7 +21,7 @@ def uniform_mesh(d1,d2,p,m,element_type):
             n+=1
 
            ##elementos##
-    EL= np.zeros([NoE,NPE])
+    EL= np.zeros([numeroDeElementos,nodosPorElemento])
 
     for i in range(1,m+1):
         for j in range(1,p+1):
@@ -39,11 +39,11 @@ def uniform_mesh(d1,d2,p,m,element_type):
                 EL[(i-1)*p+j-1, 2] = EL[(i-1)*p+j-1, 3] + 1
 
     if element_type== 'TRIANGULO':
-        NPE_new=3
-        NoE_new=2*NoE
-        EL_new=np.zeros([NoE_new,NPE_new])
+        nodosPorElementoNew=3
+        numeroDeElementosNew=2*numeroDeElementos
+        EL_new=np.zeros([numeroDeElementosNew,nodosPorElementoNew])
 
-        for i in range (1, NoE+1):
+        for i in range (1, numeroDeElementos+1):
             EL_new[2*(i-1), 0]= EL[i-1,0] 
             EL_new[2*(i-1), 1]= EL[i-1,1] 
             EL_new[2*(i-1), 2]= EL[i-1,2] 
@@ -60,15 +60,15 @@ def uniform_mesh(d1,d2,p,m,element_type):
 
 
 def graph_mesh(element_type,NL,EL):
-    NoN = np.size(NL,0)
-    NoE = np.size(EL,0)
+    numeroDeNodos = np.size(NL,0)
+    numeroDeElementos = np.size(EL,0)
 
 
     count = 1 #anotar el numero de nodos
 
     if element_type == 'CUADRADO':
         count2 = 1 #anotar el numero de elementos
-        for j in range(0,NoE):
+        for j in range(0,numeroDeElementos):
             plt.annotate(count2, xy = ((NL[EL[j,0]-1,0]+NL[EL[j,1]-1,0]+NL[EL[j,2]-1,0]+NL[EL[j,3]-1,0])/4,
             (NL[EL[j,0]-1,1]+NL[EL[j,1]-1,1]+NL[EL[j,2]-1,1]+NL[EL[j,3]-1,1])/4), c ='blue')
             count2+=1
@@ -86,7 +86,7 @@ def graph_mesh(element_type,NL,EL):
 
     if element_type=='TRIANGULO':
         count2 = 1 #anotar el numero de elementos
-        for j in range(0,NoE):
+        for j in range(0,numeroDeElementos):
             plt.annotate(count2, xy = ((NL[EL[j,0]-1,0]+NL[EL[j,1]-1,0]+NL[EL[j,2]-1,0])/3,
             (NL[EL[j,0]-1,1]+NL[EL[j,1]-1,1]+NL[EL[j,2]-1,1])/3), c ='blue')
             count2+=1
@@ -100,7 +100,7 @@ def graph_mesh(element_type,NL,EL):
         plt.plot(np.array([x2,x0]),np.array([y2,y0]), 'grey', linewidth=3)
         
 
-    for i in range(0, NoN):
+    for i in range(0, numeroDeNodos):
         plt.annotate(count, xy =([NL[i,0],NL[i,1]]))
         plt.plot(NL[i,1],NL[i,0], 'ok')
         count+=1
