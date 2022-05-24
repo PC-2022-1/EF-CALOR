@@ -63,4 +63,3 @@ for j,elem in enumerate(tri.simplices):
 
 file.close
 
-
