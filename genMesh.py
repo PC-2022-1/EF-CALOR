@@ -7,7 +7,7 @@ from Mesh import * #Archivo donde esta la función para generar malla y para gra
 
 
 d1 = 1 #Distancia en x
-d2 = 1 #Distancia en y
+d2 = 10 #Distancia en y
 p = 5  #Divisiones en x
 m = 5  #Divisiones en y
 tipoDeElemento = 'TRIANGULO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
