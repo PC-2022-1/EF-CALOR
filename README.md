@@ -37,11 +37,11 @@ nb_elemento=20
 
 #1Creación de nodos en todo el rectángulo
 
-for x in np.linspace(0,L,num=nb_elemento):
+#for x in np.linspace(0,L,num=nb_elemento):
     for y in np.linspace(0,h,num=nb_elemento):
         Nodos.append([x,y])
 
-#1.2 Mostrar Nodos
+#2 Mostrar Nodos
 puntos=np.array(Nodos)
 
 plt.plot(puntos[:,0],puntos[:,1],"o")
