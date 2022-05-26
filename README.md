@@ -2,9 +2,9 @@
 
 En esta rama se situan los archivos para la generación de mallas, el cual es el primer paso en el algoritmo FEM
 
-Sobre simpleMesh.py: 
+# Sobre simpleMesh.py: 
 
-#Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=Aua3eLpnGao para el aprendizaje y construcción de mallas.
+Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=Aua3eLpnGao para el aprendizaje y construcción de mallas.
 
 Librerias
 numpy
