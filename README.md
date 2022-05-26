@@ -70,3 +70,12 @@ plt.plot(puntos[:,0], puntos[:,1], 'o')
 plt.show()
 
 ![output_12_0](https://user-images.githubusercontent.com/105617335/170425055-5dcc3a9d-24e7-4f8e-8ccd-542dfa1a8137.png)
+
+# Sobre genMesh.py y mesh.py
+
+El archivo genMesh.py es el archivo principal ("main") donde se llama al archivo mesh.py en el cual se grafica y se genera la malla. 
+Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=kIiVQirjvyo 
+
+Librerias
+numpy
+matplotlib.pyplot
