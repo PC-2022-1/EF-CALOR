@@ -24,3 +24,5 @@ PASOS A SEGUIR
 
 #3 Resolver el sistema
 
+#4 Generar simulaciones y contrastar
+
