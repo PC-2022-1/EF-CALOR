@@ -79,3 +79,6 @@ Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=kIiVQirjvyo
 Librerias
 numpy
 matplotlib.pyplot
+
+![image](https://user-images.githubusercontent.com/93160881/170480726-9567c8d4-b1c8-4b0f-b7a6-60fdcff18a64.png)
+
