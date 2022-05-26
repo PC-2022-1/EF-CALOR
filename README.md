@@ -35,15 +35,11 @@ r=0.02
 #Elementos o nodos en los ejes
 nb_elemento=20
 
-#1 Crear Nodos
-#Nodos=np.array([[0,0],[0,1],[1,0],[1,1]])
+#1Creación de nodos en todo el rectángulo
 
-Nodos=[]
-#Creación de nodos en todo el rectángulo
-
-#for x in np.linspace(0,L,num=nb_elemento):
-#    for y in np.linspace(0,h,num=nb_elemento):
-#        Nodos.append([x,y])
+for x in np.linspace(0,L,num=nb_elemento):
+    for y in np.linspace(0,h,num=nb_elemento):
+        Nodos.append([x,y])
 
 #1.2 Mostrar Nodos
 puntos=np.array(Nodos)
@@ -57,10 +53,37 @@ plt.show()
 from scipy.spatial import Delaunay
 tri = Delaunay(puntos)
 
-#4  Visualización de la malla
-plt.triplot(puntos[:,0], puntos[:,1], tri.simplices)
+#4  Creacion de hueco circular en la esquina
+
+for x in np.linspace(0,L,num=nb_elemento):
+    if(x<r):
+        y0=math.sqrt(r**2-x**2)
+        for y in np.linspace(y0,h,num=nb_elemento):
+            Nodos.append([x,y])
+            
+    else:
+        for y in np.linspace(0,h,num=nb_elemento): 
+            Nodos.append([x,y])
+            
+#5  Refinamiento de figura circular
+p=[]
+r1=0.0195
+for x in np.linspace(0,r1,10):
+            p.append([x,math.sqrt(r1**2-x**2)])
+            
+#6 Crear un nuevo objeto sin la problematica de intersecciones en el circulo
+malla=np.delete(tri.simplices,[0,153,154,21],0)
+
+
+Elementos que que se intersectan en el circulo
+tri.find_simplex(p) #función de scipy
+
+#7  Visualización de la malla
+plt.triplot(puntos[:,0], puntos[:,1], malla)
 plt.plot(puntos[:,0], puntos[:,1], 'o')
 plt.show()
+
+![output_12_0](https://user-images.githubusercontent.com/105617335/170425055-5dcc3a9d-24e7-4f8e-8ccd-542dfa1a8137.png)
 
 
 
