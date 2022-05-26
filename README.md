@@ -57,9 +57,12 @@ plt.show()
 from scipy.spatial import Delaunay
 tri = Delaunay(puntos)
 
-#Visualización de la malla
+#4  Visualización de la malla
 plt.triplot(puntos[:,0], puntos[:,1], tri.simplices)
 plt.plot(puntos[:,0], puntos[:,1], 'o')
 plt.show()
+
+
+
 
 
