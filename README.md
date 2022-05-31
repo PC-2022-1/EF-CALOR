@@ -2,6 +2,17 @@
 
 En esta rama se situan los archivos para la generación de mallas, el cual es el primer paso en el algoritmo FEM
 
+
+# Sobre genMesh.py y mesh.py
+
+El archivo genMesh.py es el archivo principal ("main") donde se llama al archivo mesh.py en el cual se grafica y se genera la malla. 
+Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=kIiVQirjvyo 
+
+Librerias
+numpy
+matplotlib.pyplot
+
+![image](https://user-images.githubusercontent.com/93160881/170480726-9567c8d4-b1c8-4b0f-b7a6-60fdcff18a64.png)
 # Sobre simple_mesh.py: 
 
 Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=Aua3eLpnGao para el aprendizaje y construcción de mallas.
@@ -70,15 +81,4 @@ plt.plot(puntos[:,0], puntos[:,1], 'o')
 plt.show()
 
 ![output_12_0](https://user-images.githubusercontent.com/105617335/170425055-5dcc3a9d-24e7-4f8e-8ccd-542dfa1a8137.png)
-
-# Sobre genMesh.py y mesh.py
-
-El archivo genMesh.py es el archivo principal ("main") donde se llama al archivo mesh.py en el cual se grafica y se genera la malla. 
-Ejercicio y ejemplo tomado de https://www.youtube.com/watch?v=kIiVQirjvyo 
-
-Librerias
-numpy
-matplotlib.pyplot
-
-![image](https://user-images.githubusercontent.com/93160881/170480726-9567c8d4-b1c8-4b0f-b7a6-60fdcff18a64.png)
 
