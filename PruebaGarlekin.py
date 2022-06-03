@@ -28,6 +28,7 @@ kx=symbols('kx')
 ky=symbols('kx')
 h=symbols('h')
 Tf=symbols('Tf')
+q=symbols('q')
 
 #Dos caras aisladas y dos en contacto con el aire. Superficie es un foco de calor
 
@@ -105,5 +106,6 @@ for i in range (0, 4):
 
 qterm = [0,0,0,0]
 for i in range (0, 4):
-    A = -h* integrate( Si(x, 0, l, w, i) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
-    Kyterm1[i] = simplify(A)
+    A = integrate(integrate(q*Si(x,y,l,w,i),(x,0,l)),(y,0,w))
+    qterm[i] = simplify(A)
+    print(qterm[i])
