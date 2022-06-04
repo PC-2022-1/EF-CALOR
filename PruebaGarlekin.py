@@ -1,5 +1,6 @@
 '''
-Se replica el metodo de garlekin para EF en una ecuacion del calor
+Se replica el metodo de garlekin para EF en una ecuacion del calor para solo 
+un elemento 
 '''
 
 import numpy as np
@@ -68,6 +69,7 @@ def Taprox(x, y, l, w):
 #print("Kxterm1")
 Kxterm1 = [0, 0, 0, 0]
 
+#Si(x, y, l, w, i):
 Kxterm1[0] = -h* integrate( Si(0, y, l, w, 0) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) ) 
 Kxterm1[0]= simplify(Kxterm1[0])
 Kxterm1[1] = -h* integrate( Si(l, y, l, w, 1) * (Taprox(l,y,l,w) - Tf) ,( y, 0, w ) )
@@ -143,11 +145,11 @@ for i in range (0, 4):
 
 #Reuniendo el Sistema de ecuaciones para cada nodo juntando los terminos 
 eqSist=[0,0,0,0]
-eqSist2=[0,0,0,0]
+#eqSist2=[0,0,0,0]
 for i in range (0,4):
     eqSist[i]= Kxterm1[i] + Kxterm2[i] + Kyterm1[i] + Kyterm2[i] + qterm[i] 
-    eqSist2[i]=Kxterm1[i] + Kyterm1[i]
-    print(eqSist2[i])
+    #eqSist2[i]=Kxterm1[i] + Kyterm1[i]
+    #print(eqSist2[i])
     #print("--------")
 
 #Obteniendo el sistema de ecuaciones en forma matricial : (coeffMatrix)(Ti, Tn, Tj, Tm)trans + independentVector = 0

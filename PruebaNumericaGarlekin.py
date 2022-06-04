@@ -12,13 +12,15 @@ l = 0.6 #Distancia en x
 #l=symbols('l')
 w = 0.6 #Distancia en y
 #w=symbols('w')
-p = 2  #Divisiones en x
-m = 2  #Divisiones en y
+p = 1  #Divisiones en x
+m = 1  #Divisiones en y
+
+elemLength=l/p
+elemWidth=w/m
 tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
 
-#NL,EL = uniform_mesh(l,w,p,m,tipoDeElemento) #Generar malla
-
-#graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
+NL,EL = uniform_mesh(l,w,p,m,tipoDeElemento) #Generar malla
+graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
 
 #Definicion de condiciones iniciales
 
@@ -44,12 +46,10 @@ q=1000
 #print(NL)
 #print("Element list")
 #print(EL)
-
-#Funciones de Galerkin para un elemento de 4 nodos
 x=symbols('x')
 y=symbols('y')
 
-def Si(x, y, l, w, i):
+def Si(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no de la malla
     if  i==0: 
         return (1-(x/l))*(1-(y/w))
     elif i==1:
@@ -65,8 +65,14 @@ Tm=symbols('Tm')
 Tj=symbols('Tj')
 Tn=symbols('Tn')
 
-def Taprox(x, y, l, w):
-    return Ti + (x/l)*(Tj-Ti) + y/w *((Tn+(x/l)*(Tm-Tn)) - (Ti+(x/l)*(Tj-Ti)))
+T=[] #Lista de incognitas
+for elemento in EL:
+    for nodo in elemento:
+        T.append(symbols("T"+str(nodo)))
+
+print(T)
+def Taprox(x, y, l, w, E):
+    return E[0] + (x/l)*(E[1]-E[0]) + y/w *((E[3]+(x/l)*(E[2]-E[3])) - (E[0]+(x/l)*(E[1]-E[0])))
 
 ''' CONSTRUCCION DE LA INTEGRAL: 
     integral(KxTerm + KyTerm + q)Sidxdy = 0  donde: 
@@ -77,34 +83,36 @@ def Taprox(x, y, l, w):
 Kxterm1 = [0, 0, 0, 0]
 
 #For index, row
-Kxterm1[0] = -h* integrate( Si(0, y, l, w, 0) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) ) 
+
+EL=EL[0]
+Kxterm1[0] = -h* integrate( Si(NL[EL[0]-1][0], y, elemLength, elemWidth, 0) * (Taprox(NL[EL[0]-1][0],y,elemLength,elemWidth,T) - Tf) ,( y, NL[EL[0]-1][1],NL[EL[3]-1][1]) ) 
 Kxterm1[0]= simplify(Kxterm1[0])
-Kxterm1[1] = -h* integrate( Si(l, y, l, w, 1) * (Taprox(l,y,l,w) - Tf) ,( y, 0, w ) )
+Kxterm1[1] = -h* integrate( Si(NL[EL[1]-1][0], y, elemLength, elemWidth, 1) * (Taprox(NL[EL[1]-1][0],y,elemLength,elemWidth,T) - Tf) ,( y, NL[EL[0]-1][1],NL[EL[3]-1][1]) )
 Kxterm1[1]= simplify(Kxterm1[1])
-Kxterm1[2] = -h* integrate( Si(l, y, l, w, 2) * (Taprox(l,y,l,w) - Tf) ,( y, 0, w ) )
+Kxterm1[2] = -h* integrate( Si(NL[EL[2]-1][0], y, elemLength, elemWidth, 2) * (Taprox(NL[EL[2]-1][0],y,elemLength,elemWidth,T) - Tf) ,( y, NL[EL[0]-1][1],NL[EL[3]-1][1]) )
 Kxterm1[2]= simplify(Kxterm1[2])
-Kxterm1[3] = -h* integrate( Si(0, y, l, w, 3) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) )
+Kxterm1[3] = -h* integrate( Si(NL[EL[3]-1][0], y, elemLength, elemWidth, 3) * (Taprox(NL[EL[3]-1][0],y,elemLength,elemWidth,T) - Tf) ,( y, NL[EL[0]-1][1],NL[EL[3]-1][1]) )
 Kxterm1[3]= simplify(Kxterm1[3])
 
 #print("Kyterm1")
 Kyterm1 = [0, 0, 0, 0]
-Kyterm1[0] = -h* integrate( Si(x, 0, l, w, 0) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
+Kyterm1[0] = -h* integrate( Si(x, NL[EL[0]-1][1], elemLength, elemWidth, 0) * (Taprox(x,NL[EL[0]-1][1],elemLength,elemWidth,T) - Tf) ,( x, NL[EL[0]-1][0],NL[EL[1]-1][0]) )
 Kyterm1[0]= simplify(Kyterm1[0])
-Kyterm1[1] = -h* integrate( Si(x, 0, l, w, 1) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
+Kyterm1[1] = -h* integrate( Si(x, NL[EL[1]-1][1], elemLength, elemWidth, 1) * (Taprox(x,NL[EL[1]-1][1],elemLength,elemWidth,T) - Tf) ,( x, NL[EL[0]-1][0],NL[EL[1]-1][0]) )
 Kyterm1[1]= simplify(Kyterm1[1])
-Kyterm1[2] = -h* integrate( Si(x, w, l, w, 2) * (Taprox(x,w,l,w) - Tf) ,( x, 0, l ) )
+Kyterm1[2] = -h* integrate( Si(x, NL[EL[2]-1][1], elemLength, elemWidth, 2) * (Taprox(x,NL[EL[2]-1][1],elemLength,elemWidth,T) - Tf) ,( x, NL[EL[0]-1][0],NL[EL[1]-1][0]) )
 Kyterm1[2]= simplify(Kyterm1[2])
-Kyterm1[3] = -h* integrate( Si(x, w, l, w, 3) * (Taprox(x,w,l,w) - Tf) , ( x, 0, l ))
+Kyterm1[3] = -h* integrate( Si(x, NL[EL[3]-1][1], elemLength, elemWidth, 3) * (Taprox(x,NL[EL[3]-1][1],elemLength,elemWidth,T) - Tf) , ( x, NL[EL[0]-1][0],NL[EL[1]-1][0]))
 Kyterm1[3]= simplify(Kyterm1[3])
 
 #print("Kxterm2")
 Kxterm2=[0,0,0,0]
 for i in range (0, 4):
     
-    A=integrate(integrate(-kx*Ti*diff(Si(x,y,l,w,0),x)*diff(Si(x,y,l,w,i),x),(x,0,l)),(y,0,w))
-    B=integrate(integrate(-kx*Tj*diff(Si(x,y,l,w,1),x)*diff(Si(x,y,l,w,i),x),(x,0,l)),(y,0,w))
-    C=integrate(integrate(-kx*Tm*diff(Si(x,y,l,w,2),x)*diff(Si(x,y,l,w,i),x),(x,0,l)),(y,0,w))
-    D=integrate(integrate(-kx*Tn*diff(Si(x,y,l,w,3),x)*diff(Si(x,y,l,w,i),x),(x,0,l)),(y,0,w))
+    A=integrate(integrate(-kx*T[0]*diff(Si(x,y,elemLength,elemWidth,0),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
+    B=integrate(integrate(-kx*T[1]*diff(Si(x,y,elemLength,elemWidth,1),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
+    C=integrate(integrate(-kx*T[2]*diff(Si(x,y,elemLength,elemWidth,2),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
+    D=integrate(integrate(-kx*T[3]*diff(Si(x,y,elemLength,elemWidth,3),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
 
     sum = A+B+C+D
 
@@ -115,10 +123,10 @@ for i in range (0, 4):
 #print("Kyterm2")
 Kyterm2=[0,0,0,0]
 for i in range (0, 4):
-    A=integrate(integrate(-ky*Ti*diff(Si(x,y,l,w,0),y)*diff(Si(x,y,l,w,i),y),(x,0,l)),(y,0,w))
-    B=integrate(integrate(-ky*Tj*diff(Si(x,y,l,w,1),y)*diff(Si(x,y,l,w,i),y),(x,0,l)),(y,0,w))
-    C=integrate(integrate(-ky*Tm*diff(Si(x,y,l,w,2),y)*diff(Si(x,y,l,w,i),y),(x,0,l)),(y,0,w))
-    D=integrate(integrate(-ky*Tn*diff(Si(x,y,l,w,3),y)*diff(Si(x,y,l,w,i),y),(x,0,l)),(y,0,w))
+    A=integrate(integrate(-ky*T[0]*diff(Si(x,y,elemLength,elemWidth,0),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
+    B=integrate(integrate(-ky*T[1]*diff(Si(x,y,elemLength,elemWidth,1),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))    
+    C=integrate(integrate(-ky*T[2]*diff(Si(x,y,elemLength,elemWidth,2),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
+    D=integrate(integrate(-ky*T[3]*diff(Si(x,y,elemLength,elemWidth,3),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
 
     sum = A+B+C+D
     
@@ -129,7 +137,7 @@ for i in range (0, 4):
 #print("q")
 qterm = [0,0,0,0]
 for i in range (0, 4):
-    A = integrate(integrate(q*Si(x,y,l,w,i),(x,0,l)),(y,0,w))
+    A = integrate(integrate(q*Si(x,y,elemLength,elemWidth,i),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
     qterm[i] = simplify(A)
     #print(qterm[i])
 
@@ -142,10 +150,10 @@ for i in range (0,4):
     #print("--------")
 
 #Obteniendo el sistema de ecuaciones en forma matricial : (coeffMatrix)(Ti, Tn, Tj, Tm)trans + independentVector = 0
-coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [Ti, Tj, Tm, Tn])
+coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [T[0], T[1], T[2], T[3]])
 #print(coeffMatrix)
 print("------")
 #print(independentVector)
 
 #Resolviendo el sistema de ecuaciones
-print(linsolve((coeffMatrix, independentVector), [Ti, Tj, Tm, Tn]))
+print(linsolve((coeffMatrix, independentVector), [T[0], T[1], T[2], T[3]]))
