@@ -67,17 +67,38 @@ def Taprox(x, y, l, w):
 
 #print("Kxterm1")
 Kxterm1 = [0, 0, 0, 0]
-for i in range (0, 4):
-    A = -h* integrate( Si(0, y, l, w, i) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) )
-    Kxterm1[i] = simplify(A)
-    #print(Kxterm1[i])
+
+Kxterm1[0] = -h* integrate( Si(0, y, l, w, 0) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) ) 
+Kxterm1[0]= simplify(Kxterm1[0])
+Kxterm1[1] = -h* integrate( Si(l, y, l, w, 1) * (Taprox(l,y,l,w) - Tf) ,( y, 0, w ) )
+Kxterm1[1]= simplify(Kxterm1[1])
+Kxterm1[2] = -h* integrate( Si(l, y, l, w, 2) * (Taprox(l,y,l,w) - Tf) ,( y, 0, w ) )
+Kxterm1[2]= simplify(Kxterm1[2])
+Kxterm1[3] = -h* integrate( Si(0, y, l, w, 3) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) )
+Kxterm1[3]= simplify(Kxterm1[3])
+#for i in range (0, 4):#
+#    A = -h* integrate( Si(0, y, l, w, i) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) )
+#    Kxterm1[i] = simplify(A)
+#    #print(Kxterm1[i])
+#Kxterm1[1] =  h* integrate( Si(l, y, l, w, 1) * (Taprox(0,y,l,w) - Tf) ,( y, 0, w ) )    
 
 #print("Kyterm1")
 Kyterm1 = [0, 0, 0, 0]
-for i in range (0, 4):
-    A = -h* integrate( Si(x, 0, l, w, i) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
-    Kyterm1[i] = simplify(A)
+
+Kyterm1[0] = -h* integrate( Si(x, 0, l, w, 0) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
+Kyterm1[0]= simplify(Kyterm1[0])
+Kyterm1[1] = -h* integrate( Si(x, 0, l, w, 1) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
+Kyterm1[1]= simplify(Kyterm1[1])
+Kyterm1[2] = -h* integrate( Si(x, w, l, w, 2) * (Taprox(x,w,l,w) - Tf) ,( x, 0, l ) )
+Kyterm1[2]= simplify(Kyterm1[2])
+Kyterm1[3] = -h* integrate( Si(x, w, l, w, 3) * (Taprox(x,w,l,w) - Tf) , ( x, 0, l ))
+Kyterm1[3]= simplify(Kyterm1[3])
+
+#for i in range (0, 4):
+# #   A = -h* integrate( Si(x, 0, l, w, i) * (Taprox(x,0,l,w) - Tf) ,( x, 0, l ) )
+# #   Kyterm1[i] = simplify(A)
     #print(Kyterm1[i])
+
 
 #print("Kxterm2")
 Kxterm2=[0,0,0,0]
@@ -93,6 +114,7 @@ for i in range (0, 4):
     Kxterm2[i] = sum
     Kxterm2[i] = simplify(sum)
     #print(Kxterm2[i])
+
 
 #print("Kyterm2")
 Kyterm2=[0,0,0,0]
@@ -111,6 +133,7 @@ for i in range (0, 4):
     #Kyterm2[i] = simplify(sum)
     #print(Kyterm2[i])
 
+
 print("q")
 qterm = [0,0,0,0]
 for i in range (0, 4):
@@ -120,16 +143,18 @@ for i in range (0, 4):
 
 #Reuniendo el Sistema de ecuaciones para cada nodo juntando los terminos 
 eqSist=[0,0,0,0]
+eqSist2=[0,0,0,0]
 for i in range (0,4):
     eqSist[i]= Kxterm1[i] + Kxterm2[i] + Kyterm1[i] + Kyterm2[i] + qterm[i] 
-    #print(eqSist[i])
+    eqSist2[i]=Kxterm1[i] + Kyterm1[i]
+    print(eqSist2[i])
     #print("--------")
 
 #Obteniendo el sistema de ecuaciones en forma matricial : (coeffMatrix)(Ti, Tn, Tj, Tm)trans + independentVector = 0
 coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [Ti, Tn, Tj, Tm])
-print(coeffMatrix)
+#print(coeffMatrix)
 print("------")
-print(independentVector)
+#print(independentVector)
 
 #Resolviendo el sistema de ecuaciones
-print(linsolve((coeffMatrix, independentVector), [Ti, Tn, Tj, Tm]))
+#print(linsolve((coeffMatrix, independentVector), [Ti, Tn, Tj, Tm]))
