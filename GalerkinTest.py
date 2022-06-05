@@ -22,8 +22,6 @@ NL,EL = uniform_mesh(l,w,p,m,tipoDeElemento) #Generar malla
 
 graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
 
-print(EL)
-print(EL[0])
 #Definicion de condiciones iniciales
 
 #q Vatios/m3
@@ -41,8 +39,15 @@ h=20
 Tf=30
 #q=symbols('q')
 q=1000
+
+print(EL)
+print(NL)
 eqSist=[]
 for i in range (0, len(EL)):
-    eqSist.append(galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i))
-    print(eqSist)
+    galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i)
+    #eqSist.append(galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i))
+    #print(eqSist)#
 
+#eqSist = (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, 0)) #Para prueba conveccion primer elemento
+
+#print(eqSist)

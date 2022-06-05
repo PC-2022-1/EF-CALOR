@@ -2,7 +2,7 @@
 Se replica el metodo de garlekin para EF en una ecuacion del calor para solo 
 un elemento 
 '''
-
+from IPython.display import display
 import numpy as np
 import matplotlib.pyplot as plt
 from Mesh import * #Archivo donde esta la función para generar malla y para graficar
@@ -102,7 +102,7 @@ Kyterm1[3]= simplify(Kyterm1[3])
     #print(Kyterm1[i])
 
 
-#print("Kxterm2")
+print("Kxterm2")
 Kxterm2=[0,0,0,0]
 for i in range (0, 4):
     
@@ -115,10 +115,10 @@ for i in range (0, 4):
 
     Kxterm2[i] = sum
     Kxterm2[i] = simplify(sum)
-    #print(Kxterm2[i])
+    print(Kxterm2[i])
 
 
-#print("Kyterm2")
+print("Kyterm2")
 Kyterm2=[0,0,0,0]
 for i in range (0, 4):
     
@@ -133,7 +133,7 @@ for i in range (0, 4):
     Kyterm2[i] = simplify(sum)
     #Kyterm2[i] = collect(sum, Ti)
     #Kyterm2[i] = simplify(sum)
-    #print(Kyterm2[i])
+    print(Kyterm2[i])
 
 
 print("q")
@@ -141,22 +141,26 @@ qterm = [0,0,0,0]
 for i in range (0, 4):
     A = integrate(integrate(q*Si(x,y,l,w,i),(x,0,l)),(y,0,w))
     qterm[i] = simplify(A)
-    #print(qterm[i])
+    print(qterm[i])
 
 #Reuniendo el Sistema de ecuaciones para cada nodo juntando los terminos 
 eqSist=[0,0,0,0]
-#eqSist2=[0,0,0,0]
+eqSist2=[0,0,0,0]
 for i in range (0,4):
     eqSist[i]= Kxterm1[i] + Kxterm2[i] + Kyterm1[i] + Kyterm2[i] + qterm[i] 
-    #eqSist2[i]=Kxterm1[i] + Kyterm1[i]
-    #print(eqSist2[i])
+    eqSist2[i]=Kxterm1[i] + Kyterm1[i]
+    eqSist2[i] = collect(eqSist2[i], h*l/6)
+    display((eqSist2[i]))
     #print("--------")
 
 #Obteniendo el sistema de ecuaciones en forma matricial : (coeffMatrix)(Ti, Tn, Tj, Tm)trans + independentVector = 0
 coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [Ti, Tn, Tj, Tm])
+
+
 #print(coeffMatrix)
 print("------")
 #print(independentVector)
+
 
 #Resolviendo el sistema de ecuaciones
 #print(linsolve((coeffMatrix, independentVector), [Ti, Tn, Tj, Tm]))

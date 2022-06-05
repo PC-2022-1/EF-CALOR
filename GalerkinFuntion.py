@@ -39,7 +39,8 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i):
 
     #print(T)
     def Taprox(x, y, l, w, E):
-        return E[0] + (x/l)*(E[1]-E[0]) + y/w *((E[3]+(x/l)*(E[2]-E[3])) - (E[0]+(x/l)*(E[1]-E[0])))
+        return E[0] + (x/l)*(E[1]-E[0]) + y/w *((E[3]+(x/l)*(E[2]-E[3])) - 
+        (E[0]+(x/l)*(E[1]-E[0])))
 
     ''' CONSTRUCCION DE LA INTEGRAL: 
         integral(KxTerm + KyTerm + q)Sidxdy = 0  donde: 
@@ -55,8 +56,8 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i):
     T=[]
     for j in EL:
         T.append(symbols("T"+str(j)))
-    
     print(T)
+    print("-----------------------")
 
     Kxterm1[0] = -h* integrate( Si(NL[EL[0]-1][0], y, elemLength, elemWidth, 0) * (Taprox(NL[EL[0]-1][0],y,elemLength,elemWidth,T) - Tf) ,( y, NL[EL[0]-1][1],NL[EL[3]-1][1]) ) 
     Kxterm1[0]= simplify(Kxterm1[0])
@@ -66,7 +67,10 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i):
     Kxterm1[2]= simplify(Kxterm1[2])
     Kxterm1[3] = -h* integrate( Si(NL[EL[3]-1][0], y, elemLength, elemWidth, 3) * (Taprox(NL[EL[3]-1][0],y,elemLength,elemWidth,T) - Tf) ,( y, NL[EL[0]-1][1],NL[EL[3]-1][1]) )
     Kxterm1[3]= simplify(Kxterm1[3])
-
+    #Prueba conveccion: Para el primer elemento y cumplir con los lados de 
+    #conveccion, se deben hacer estos dos terminos 0
+    #Kxterm1[2]=0
+    #Kxterm1[1]=0
     #print("Kyterm1")
     Kyterm1 = [0, 0, 0, 0]
     Kyterm1[0] = -h* integrate( Si(x, NL[EL[0]-1][1], elemLength, elemWidth, 0) * (Taprox(x,NL[EL[0]-1][1],elemLength,elemWidth,T) - Tf) ,( x, NL[EL[0]-1][0],NL[EL[1]-1][0]) )
@@ -77,7 +81,10 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i):
     Kyterm1[2]= simplify(Kyterm1[2])
     Kyterm1[3] = -h* integrate( Si(x, NL[EL[3]-1][1], elemLength, elemWidth, 3) * (Taprox(x,NL[EL[3]-1][1],elemLength,elemWidth,T) - Tf) , ( x, NL[EL[0]-1][0],NL[EL[1]-1][0]))
     Kyterm1[3]= simplify(Kyterm1[3])
-
+    #Prueba conveccion: Para el primer elemento y cumplir con los lados de 
+    #conveccion, se deben hacer estos dos terminos 0
+    #Kyterm1[2]=0
+    #Kyterm1[3]=0
     #print("Kxterm2")
     Kxterm2=[0,0,0,0]
     for i in range (0, 4):
@@ -105,6 +112,7 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i):
         
         Kyterm2[i] = sum
         Kyterm2[i] = simplify(sum)
+        #print(Kyterm2[i] )
 
 
     #print("q")
@@ -119,7 +127,7 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i):
     listaEjemplo=[0,0,0,0,0,0,0,0,0]
     for i in range (0,4):
         eqSist[i]= Kxterm1[i] + Kxterm2[i] + Kyterm1[i] + Kyterm2[i] + qterm[i] 
-        #print(eqSist[i])
+        print(eqSist[i])
         #print("--------")
     #Obteniendo el sistema de ecuaciones en forma matricial : (coeffMatrix)(Ti, Tn, Tj, Tm)trans + independentVector = 0
     coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [T[0], T[1], T[2], T[3]])
