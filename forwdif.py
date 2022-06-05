@@ -6,17 +6,16 @@ de pruebas con dependencia temporal en 1 dimensión.
 """
 
 from numpy import *
-import matplotlib.pyplot as plt
 
-def forwdif(f, g1, g2, a, b, c, n, m):
+def forwdif(f, g1, g2, xf, tf, c, n, m):
 
     """ 
     Entrada - f = u (x, 0) funcion de estado inicial
             - g1 = u (0, t) funcion de condición frontera x = 0
-            - g2 = u (a, t) funcion de condición frontera x = a
-            - a y b extremos derechos de  [0, a]  y  [0, b]
+            - g2 = u (xf, t) funcion de condición frontera x = a
+            - xf y tf extremos derechos de  [0, xf]  y  [0, tf] * (Pendiente la combinación de la malla) *
             - c la constante en la ecuacion de calor
-            - n y m  numero de puntos (nodos) de la cuadricula en  [0, a]  y  [0, b]
+            - n y m  numero de puntos (nodos) de la cuadricula en  [0, xf]  X  [0, tf]
     Salida  - U matriz solución [x, t] indexing
     """
 
@@ -26,14 +25,14 @@ def forwdif(f, g1, g2, a, b, c, n, m):
     g1 = vectorize(g1)
     g2 = vectorize(g2)
 
-    h = a / (n-1) # Tamaño de intervalo x
-    k = b / (m-1) # Tamaño de intervalo t
+    h = xf / (n-1) # Tamaño de intervalo x
+    k = tf / (m-1) # Tamaño de intervalo t
     r = c**2 * k / h**2 # Constante del calor diferencial
     s = 1 - 2 * r # Transmisión del calor
 
     # Inicialización de valores
     U = zeros([n, m]) # Matriz solución
-    V = linspace(0,b,m) # Valores frontera
+    V = linspace(0, tf, m) # Valores frontera
 
     # ------- Solución del problema usando las condiciones / Generacion de U ----- #
 
@@ -51,3 +50,9 @@ def forwdif(f, g1, g2, a, b, c, n, m):
             U[i, j] = s * U[i, j-1] + r * (U[i-1, j-1] + U[i+1, j-1])
 
     return U.T
+
+f = lambda x : sin(pi*x/4)
+g1 = lambda t : 0*t
+g2 = lambda t : exp(-pi**2*t)
+U = forwdif(f, g1, g2, 2, .6, 4, 5, 4)
+print(U)
