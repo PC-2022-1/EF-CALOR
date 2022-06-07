@@ -6,8 +6,10 @@ de pruebas con dependencia temporal en 2 dimensión.
 """
 
 from numpy import *
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
-def cendiff(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt):
+def cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt):
 
     """ 
     Entrada - f = u (x, y, 0) funcion de estado inicial
@@ -37,32 +39,61 @@ def cendiff(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt):
     r = c * ht / (hx*hy) # Constante del calor diferencial
 
     # Inicialización de valores
-    U = zeros([tf, xf, yf]) # Matriz solución
+    U = zeros([nt, nx, ny]) # Matriz solución
 
 
-    Vx = linspace(0, yf, ny) # Valores frontera x
-    Vy = linspace(0, xf, nx) # Valores frontera y
+    Vx = zeros([nt, ny]) # Valores frontera x
+    Vy = zeros([nt, nx]) # Valores frontera y
 
     # ------- Solución del problema usando las condiciones / Generacion de U ----- #
 
     # Condiciones de Frontera
-    U[:, :, 0] = g1(Vx)  # Extremo x = 0 #### Ojo: Matrices
-    U[:, :, ny] = g2(Vx) # Extremo x = xf
-
-    U[:, 0, :] = g3(Vy)  # Extremo y = 0
-    U[:, ny, :] = g4(Vy) # Extremo y = yf
+    U[:, (nx-1), :] = g2(Vx)
+    U[:, :, 0] = g3(Vy)
+    U[:, 0, :] = g1(Vx)
+    U[:, :, (ny-1)] = g4(Vy)    
 
     # Generar la primera fila
     U[0, :, :] = f(U[0, :, :])
 
     # Iteramos sobre U
-    for k in range(0, nt, ht):
-        for i in range(1, nx, hx):
-            for j in range(1, ny, hy):
-                U[k+1, i, j] = r * (u[k][i+1][j] + u[k][i-1][j] + u[k][i][j+1] + u[k][i][j-1] - 4*u[k][i][j]) + u[k][i][j]
+    for k in range(0, nt-1):
+        for i in range(1, nx-1):
+            for j in range(1, ny-1):
+                U[k+1, i, j] = r * (U[k][i+1][j] + U[k][i-1][j] + U[k][i][j+1] + U[k][i][j-1] - 4*U[k][i][j]) + U[k][i][j]
 
     return U
 
-    f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt
-#f = lambda x, y, t : 0*(x + y)*t
-#g1 = lambda y, t : sin()
+# --- X = [x, y, t] : Vector de variables --- #
+f = lambda x : 0
+g1 = lambda y : exp(-10*y)
+g2 = lambda y : 250
+g3 = lambda x : 0
+g4 = lambda x : 100
+
+xf = 10; yf = 100; tf = 10; c = 2
+nx = 100; ny = 40; nt = 100
+
+U = cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt)
+
+def plotheatmap(u_k, k):
+  # Clear the current plot figure
+    hx = xf / (nx-1) # Tamaño de intervalo x
+    hy = yf / (ny - 1)
+
+    plt.clf()
+    plt.title(f"Temperature at t ={k*(hx * hy / (4*c)):.3f} unit time")
+    plt.xlabel("x")
+    plt.ylabel("y")
+  
+    # This is to plot u_k (u at time-step k)
+    plt.pcolormesh(u_k, cmap=plt.cm.jet, vmin=0, vmax=250)
+    plt.colorbar()
+  
+    return plt
+
+def animate(k):
+  plotheatmap(U[k,:,:], k)
+
+anim = animation.FuncAnimation(plt.figure(), animate, interval=1, frames=nt-1, repeat=False)
+out = anim.save("heat_equation_solution.gif")
