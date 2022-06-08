@@ -114,6 +114,7 @@ for i in range (0, 4):
     C=integrate(integrate(-kx*T[2]*diff(Si(x,y,elemLength,elemWidth,2),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
     D=integrate(integrate(-kx*T[3]*diff(Si(x,y,elemLength,elemWidth,3),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
 
+
     sum = A+B+C+D
 
     Kxterm2[i] = sum
@@ -123,10 +124,12 @@ for i in range (0, 4):
 #print("Kyterm2")
 Kyterm2=[0,0,0,0]
 for i in range (0, 4):
+
     A=integrate(integrate(-ky*T[0]*diff(Si(x,y,elemLength,elemWidth,0),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
     B=integrate(integrate(-ky*T[1]*diff(Si(x,y,elemLength,elemWidth,1),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))    
     C=integrate(integrate(-ky*T[2]*diff(Si(x,y,elemLength,elemWidth,2),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
     D=integrate(integrate(-ky*T[3]*diff(Si(x,y,elemLength,elemWidth,3),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,NL[EL[0]-1][0],NL[EL[1]-1][0])),(y,NL[EL[0]-1][1],NL[EL[3]-1][1]))
+
 
     sum = A+B+C+D
     

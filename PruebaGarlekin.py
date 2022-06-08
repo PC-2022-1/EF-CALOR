@@ -2,12 +2,14 @@
 Se replica el metodo de garlekin para EF en una ecuacion del calor para solo 
 un elemento 
 '''
-from IPython.display import display
+
 import numpy as np
 import matplotlib.pyplot as plt
 from Mesh import * #Archivo donde esta la función para generar malla y para graficar
 from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  diff, Eq, Matrix
 from sympy import *
+from prettytable import PrettyTable
+
 #l = 0.6 #Distancia en x
 l=symbols('l')
 #w = 0.6 #Distancia en y
@@ -147,19 +149,28 @@ for i in range (0, 4):
 eqSist=[0,0,0,0]
 eqSist2=[0,0,0,0]
 for i in range (0,4):
-    eqSist[i]= Kxterm1[i] + Kxterm2[i] + Kyterm1[i] + Kyterm2[i] + qterm[i] 
-    eqSist2[i]=Kxterm1[i] + Kyterm1[i]
-    eqSist2[i] = collect(eqSist2[i], h*l/6)
-    display((eqSist2[i]))
-    #print("--------")
+    eqSist[i]=  Kxterm2[i] + Kyterm2[i] + qterm[i] 
 
 #Obteniendo el sistema de ecuaciones en forma matricial : (coeffMatrix)(Ti, Tn, Tj, Tm)trans + independentVector = 0
-coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [Ti, Tn, Tj, Tm])
-
+# coeffMatrix, independentVector = linear_eq_to_matrix(eqSist, [Ti, Tn, Tj, Tm])
+Mk, Mq = linear_eq_to_matrix(eqSist, [Ti, Tj, Tm, Tn])
+Mx,Vx = linear_eq_to_matrix(Kxterm1, [Ti, Tj, Tm, Tn])
+My, Vy = linear_eq_to_matrix(Kyterm1, [Ti, Tj, Tm, Tn])
 
 #print(coeffMatrix)
 print("------")
 #print(independentVector)
+print(Mk)
+print(Mq)
+print(Mx)
+print(Vx)
+print(My)
+print(Vy)
+#print(B)
+
+#Condiciones de convección en Mx,Vx y My,Vy
+
+
 
 
 #Resolviendo el sistema de ecuaciones
