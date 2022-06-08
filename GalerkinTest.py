@@ -1,4 +1,4 @@
-#Archivo donde se llama a la funcion garlekin y se hacen pruebas numericas
+#Archivo donde se llama a la funcion galerkin y se hacen pruebas numericas
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,98 +7,79 @@ from Mesh import * #Archivo donde esta la función para generar malla y para gra
 from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  diff, Eq, Matrix
 from sympy import *
 from GalerkinFuntion import *
-from GalerkinFuntionNormalizado import *
+#from GalerkinFuntionNormalizado import *
 
 l = 0.6 #Distancia en x
 #l=symbols('l')
 w = 0.6 #Distancia en y
 #w=symbols('w')
-p = 4  #Divisiones en x
-m = 4  #Divisiones en y
+p = 2  #Divisiones en x
+m = 2  #Divisiones en y
 
-elemLength=l/p
-elemWidth=w/m
+elemLength = l/p #Largo del elemento
+elemWidth = w/m  #Ancho del elemento
 tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
 
-NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) #Generar malla
+#Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
+#y EL("Element list") que contiene la lista de nodos de cada elemento
+NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
 
-# NL= [[0,0],[0.3,0],[0.3,0.3],[0,0.3],[-0.3,0.3],[-0.3,0],[-0.3,-0.3],[0,-0.3],[0.3,-0.3]]
-# EL=[[1,2,3,4],[6,1,4,5],[7,8,1,6],[8,9,2,1]]
 # graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
 
 #Definicion de condiciones iniciales
 
-#q Vatios/m3
-#k conductividad en X y en Y (Watts)
-#h Coeficiente de conveccion
-#Tf Temperatura del aire 
-
 #kx=symbols('kx')
-kx=1.2
+kx=1.2 #k conductividad en y
 #ky=symbols('kx')
-ky=1.2
+ky=1.2 #k conductividad en X
 #h=symbols('h')
-h=20
+h=20 #h Coeficiente de conveccion
 #Tf=symbols('Tf')
-Tf=30
+Tf=30 #Tf Temperatura del aire 
 #q=symbols('q')
-q=1000
+q=1000 #q Vatios/m3
 
-# print(EL)
-# print(NL)
+
 eqSist=[]
 dataFrame=pd.DataFrame()
-dataF1=pd.DataFrame()
-dataF2=pd.DataFrame()
-dataF3=pd.DataFrame()
-dataF4=pd.DataFrame()
 
-listaLadosConv=[True,True,True,True] #Lados i-j, j-m, m-n, n-i
+listaLadosConv=[False,False,False,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
 
-dataFrameList = [] 
+dataFrameList = []  #Se juntan las dataframe de cada elemento en una lista dataFrameList
 for i in range (0, len(EL)):
-    # (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i,l,w))
     dataFrameList.append(galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i,l,w, listaLadosConv ))
-    #print(eqSist)#
 
-print(dataFrameList)
+#print(dataFrameList)
 
-# dataF1 = (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, 0,l,w))
-# dataF2 = (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, 1,l,w))
-# dataF3 = (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, 2,l,w))
-# dataF4 = (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, 3,l,w))
-
+#Nuevo dataframe juntando todas las dataFrame con elementos. Teniendo 4x#El ecuaciones
 DataFrame = pd.concat(dataFrameList, axis=0)
 
-# result.groupby(['indep'])['indep'].sum()
-#result.fillna(0)
-CompressedDF = DataFrame.replace(np.nan,0)
-CompressedDF = DataFrame.groupby("nodo").sum()
-CompressedDF.to_excel("ef.xlsx")
-DataFrame.to_excel ("ef2.xlsx" )
-#print(CompressedDF)
+#Las ecuaciones se suma deacuerdo a los nodos, para tener #Nodos ecuaciones
+CompressedDF = DataFrame.replace(np.nan,0) #0 donde no hay termino
+CompressedDF = DataFrame.groupby("nodo").sum() #suma por columna nodo
+CompressedDF.to_excel("ef.xlsx") #Para visualizar dataFrame comprimido
+DataFrame.to_excel ("ef2.xlsx" ) #Para visualizar dataFrame original
 
-matrixFinal = np.matrix(CompressedDF.drop('indep', inplace=False, axis=1))
-vectorFinal = np.array(CompressedDF['indep'])
-CompressedDF.drop('indep', inplace=True, axis=1)
-TemperatureVector =np.array(CompressedDF.columns )
+#Generación de matrices
+matrixFinal = np.matrix(CompressedDF.drop('indep', inplace=False, axis=1)) #Matriz de coeff final
+vectorFinal = np.array(CompressedDF['indep']) #Vector independiente para la solucion 
+CompressedDF.drop('indep', inplace=True, axis=1) #Eliminamos de CompressedDF la columna indep
+TemperatureVector =np.array(CompressedDF.columns ) #Se genera un vector con las incognitas
 
 
-print((matrixFinal))
-print((vectorFinal))
+#print(matrixFinal)
+#print(vectorFinal)
 
+#Se genera una lista para guardar como incognitas las temperaturas
 listaTemperaturas=[]
-
 for i in TemperatureVector:
     listaTemperaturas.append(symbols(str(i)))
-    #print(i)
+
+#Para usar la funcion linsolve de numpy 
 vectorFinal = vectorFinal.astype('float32')
 matrixFinal = matrixFinal.astype('float32')
 
 print(TemperatureVector)
-# print(linsolve((matrixFinal, vectorFinal), listaTemperaturas))
+#Se resuelve el sistema de ecuaciones
 result=np.linalg.solve(matrixFinal, vectorFinal)
 print(result)
-# eqSist = (galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, 0)) #Para prueba conveccion primer elemento
-
-# print(eqSist)
