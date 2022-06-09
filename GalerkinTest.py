@@ -32,18 +32,27 @@ NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
 kx=1.2 #k conductividad en y
 #ky=symbols('kx')
 ky=1.2 #k conductividad en X
+
+#Para caso donde la superficie es fuente de calor
 #h=symbols('h')
 h=20 #h Coeficiente de conveccion
 #Tf=symbols('Tf')
 Tf=30 #Tf Temperatura del aire 
 #q=symbols('q')
-q=1000 #q Vatios/m3
+q=1000 #q Flujo especifico de calor Vatios/m3  
+
+#Para caso donde el calor viene del ambiente:
+# h=-20 #h Coeficiente de conveccion
+# Tf=100 #Tf Temperatura del aire 
+# q=-100 #q Flujo especifico de calor Vatios/m3 
+
+
 
 
 eqSist=[]
 dataFrame=pd.DataFrame()
 
-listaLadosConv=[False,False,False,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
+listaLadosConv=[True,True,True,False] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
 
 dataFrameList = []  #Se juntan las dataframe de cada elemento en una lista dataFrameList
 for i in range (0, len(EL)):
