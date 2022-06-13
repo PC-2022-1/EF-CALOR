@@ -1,6 +1,6 @@
 from tkinter import*
-import time
 import os
+import sys
 
 root=Tk()
 
@@ -14,12 +14,10 @@ root.resizable(1,1)                    #la ventana no se puede cambiar de tamañ
 num= StringVar()                        #variable donde se guarda el dato input
 
 #definimos la funcion del boton
-def fib():
-    n= int(entry1.get())
-    """if n<=2:
-        print(n-1)
-    else:"""
-    print("El número es: ", fib(n-1)+fib(n-2))
+def Diff():
+    os.system('python copia_diff.py')
+
+    
 
 #texto informativo
 label1= Label(root, text= "Ingresa las condiciones de frontera: ")
@@ -30,7 +28,7 @@ entry1=Entry(root, textvariable=num, borderwidth=3)
 entry1.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
 
 #Botones
-button1= Button(root, text="Diferencias Finitas", borderwidth=3)#Creamos el boton
+button1= Button(root, text="Diferencias Finitas", borderwidth=3,command=Diff)#Creamos el boton
 button1.grid(row=4)
 button1.config(cursor="hand2")
 
