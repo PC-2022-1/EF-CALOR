@@ -10,6 +10,40 @@ from Mesh import * #Archivo donde esta la función para generar malla y para gra
 from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  diff, Eq, Matrix
 from sympy import *
 import pandas as pd
+from scipy.integrate import dblquad
+
+
+#S es la funcion "HAT" para un elemento de 4 nodos
+#la cual es 0 en cualquier nodo distinto a su posicion
+def Si(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no de la malla
+    if  i==0: 
+        return (1-(x/l))*(1-(y/w))
+    elif i==1:
+        return  (x/l)*(1-(y/w)) 
+    elif i==2:
+        return (x/l)*(y/w)
+    elif i==3:
+        return (1-(x/l))*(y/w)    
+
+def DevS_x(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no de la malla
+    if  i==0: 
+        return (-w + y) / (l* w)
+    elif i==1: 
+        return  (w-y)/(l*w)
+    elif i==2:
+        return  y/(l*w)
+    elif i==3:
+        return  -y/(l*w) 
+
+def DevS_y(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no de la malla
+    if  i==0: 
+        return (-l + x )/ (l*w)
+    elif i==1:
+        return  -x/(l*w)
+    elif i==2:
+        return x/(l*w)
+    elif i==3:
+        return (l-x) / (l*w)
 
 #Funciones de Galerkin para un elemento de 4 nodos
 def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totallenght, totalwidth, listaLadosConv):
@@ -17,18 +51,6 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     
     x=symbols('x')
     y=symbols('y')
-
-    #S es la funcion "HAT" para un elemento de 4 nodos
-    #la cual es 0 en cualquier nodo distinto a su posicion
-    def Si(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no de la malla
-        if  i==0: 
-            return (1-(x/l))*(1-(y/w))
-        elif i==1:
-            return  (x/l)*(1-(y/w)) 
-        elif i==2:
-            return (x/l)*(y/w)
-        elif i==3:
-            return (1-(x/l))*(y/w)    
 
     #Se define la función de temperatura aproximada, 
     #El argumento E son las temperaturas incognitas cuyos subindices dependen de
@@ -65,13 +87,9 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     #Se evalua en su condicion en x
     Kxterm1 = [0, 0, 0, 0]
     Kxterm1[0] = -h* integrate( Si(0, y, elemLength, elemWidth, 0) * (Taprox(0,y,elemLength,elemWidth,T) - Tf) ,( y, 0 ,elemWidth) ) 
-    Kxterm1[0]= simplify(Kxterm1[0])
     Kxterm1[1] = -h* integrate( Si(elemLength, y, elemLength, elemWidth, 1) * (Taprox(elemLength,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth ) )
-    Kxterm1[1]= simplify(Kxterm1[1])
     Kxterm1[2] = -h* integrate( Si(elemLength, y, elemLength, elemWidth, 2) * (Taprox(elemLength,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth) )
-    Kxterm1[2]= simplify(Kxterm1[2])
     Kxterm1[3] = -h* integrate( Si(0, y, elemLength, elemWidth, 3) * (Taprox(0,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth) )
-    Kxterm1[3]= simplify(Kxterm1[3])
 
     #Se genera un arreglo para el Kyterm1, donde cada entrada corresponde a un nodo.
     #Viene de aplicar las condiciones de equilibrio.
@@ -80,51 +98,56 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     #Se evalua en su condicion en y
     Kyterm1 = [0, 0, 0, 0]
     Kyterm1[0] = -h* integrate( Si(x, 0, elemLength, elemWidth, 0) * (Taprox(x,0,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[0]= simplify(Kyterm1[0])
     Kyterm1[1] = -h* integrate( Si(x, 0, elemLength, elemWidth, 1) * (Taprox(x,0,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[1]= simplify(Kyterm1[1])
     Kyterm1[2] = -h* integrate( Si(x, elemWidth, elemLength, elemWidth, 2) * (Taprox(x,elemWidth,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[2]= simplify(Kyterm1[2])
     Kyterm1[3] = -h* integrate( Si(x, elemWidth, elemLength, elemWidth, 3) * (Taprox(x,elemWidth,elemLength,elemWidth,T) - Tf) , ( x, 0,elemLength))
-    Kyterm1[3]= simplify(Kyterm1[3])
 
 
+    #print("h")
     #Kxterm2 se compone de 4 integrales (cada una por nodo). Es la relacion entre los 4 nodos del elemento en x
     Kxterm2=[0,0,0,0]
     for i in range (0, 4):
-        A=integrate(integrate(-kx*T[0]*diff(Si(x,y,elemLength,elemWidth,0),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,0,elemLength)),(y,0,elemWidth))
-        B=integrate(integrate(-kx*T[1]*diff(Si(x,y,elemLength,elemWidth,1),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,0,elemLength)),(y,0,elemWidth))
-        C=integrate(integrate(-kx*T[2]*diff(Si(x,y,elemLength,elemWidth,2),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,0,elemLength)),(y,0,elemWidth))
-        D=integrate(integrate(-kx*T[3]*diff(Si(x,y,elemLength,elemWidth,3),x)*diff(Si(x,y,elemLength,elemWidth,i),x),(x,0,elemLength)),(y,0,elemWidth))
+        A=T[0]*(dblquad(lambda x, y : (-kx*DevS_x(x,y,elemLength,elemWidth,0)*DevS_x(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+        B=T[1]*(dblquad(lambda x, y : (-kx*DevS_x(x,y,elemLength,elemWidth,1)*DevS_x(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+        C=T[2]*(dblquad(lambda x, y : (-kx*DevS_x(x,y,elemLength,elemWidth,2)*DevS_x(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+        D=T[3]*(dblquad(lambda x, y : (-kx*DevS_x(x,y,elemLength,elemWidth,3)*DevS_x(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+
+
+        #A=T[0]*integrate(integrate(-kx*DevS_x(x,y,elemLength,elemWidth,0)*DevS_x(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
+        #B=integrate(integrate(-kx*T[1]*DevS_x(x,y,elemLength,elemWidth,1)*DevS_x(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
+        #C=integrate(integrate(-kx*T[2]*DevS_x(x,y,elemLength,elemWidth,2)*DevS_x(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
+        #D=integrate(integrate(-kx*T[3]*DevS_x(x,y,elemLength,elemWidth,3)*DevS_x(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
 
         sum = A+B+C+D
 
         Kxterm2[i] = sum
-        Kxterm2[i] = simplify(sum)
-        #print(Kxterm2[i])
 
+    
     #Kyterm2 se compone de 4 integrales (cada una por nodo). Es la relacion entre los 4 nodos del elemento en y
     Kyterm2=[0,0,0,0]
     for i in range (0, 4):
    
-        A=integrate(integrate(-ky*T[0]*diff(Si(x,y,elemLength,elemWidth,0),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,0,elemLength)),(y,0,elemWidth))
-        B=integrate(integrate(-ky*T[1]*diff(Si(x,y,elemLength,elemWidth,1),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,0,elemLength)),(y,0,elemWidth))    
-        C=integrate(integrate(-ky*T[2]*diff(Si(x,y,elemLength,elemWidth,2),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,0,elemLength)),(y,0,elemWidth))
-        D=integrate(integrate(-ky*T[3]*diff(Si(x,y,elemLength,elemWidth,3),y)*diff(Si(x,y,elemLength,elemWidth,i),y),(x,0,elemLength)),(y,0,elemWidth))
+        A=T[0]*(dblquad(lambda x, y : (-ky*DevS_y(x,y,elemLength,elemWidth,0)*DevS_y(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+        B=T[1]*(dblquad(lambda x, y : (-ky*DevS_y(x,y,elemLength,elemWidth,1)*DevS_y(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+        C=T[2]*(dblquad(lambda x, y : (-ky*DevS_y(x,y,elemLength,elemWidth,2)*DevS_y(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+        D=T[3]*(dblquad(lambda x, y : (-ky*DevS_y(x,y,elemLength,elemWidth,3)*DevS_y(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0])
+
+        # A=integrate(integrate(-ky*T[0]*DevS_y(x,y,elemLength,elemWidth,0)*DevS_y(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
+        # B=integrate(integrate(-ky*T[1]*DevS_y(x,y,elemLength,elemWidth,1)*DevS_y(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))    
+        # C=integrate(integrate(-ky*T[2]*DevS_y(x,y,elemLength,elemWidth,2)*DevS_y(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
+        # D=integrate(integrate(-ky*T[3]*DevS_y(x,y,elemLength,elemWidth,3)*DevS_y(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
 
         sum = A+B+C+D
         
         Kyterm2[i] = sum
-        Kyterm2[i] = simplify(sum)
-        #print(Kyterm2[i] )
 
 
+    #print("y")
     #Termino q: termino independiente de la ecuacion del calor
     qterm = [0,0,0,0]
     for i in range (0, 4):
-        A = integrate(integrate(q*Si(x,y,elemLength,elemWidth,i),(x,0,elemLength)),(y,0,elemWidth))
-        qterm[i] = simplify(A)
-        #print(qterm[i])
+        qterm[i] = dblquad( lambda x, y : (q*Si(x,y,elemLength,elemWidth,i)),0, elemWidth, lambda x: 0, lambda x: elemLength)[0]
+
 
     #Reuniendo el Sistema de ecuaciones para cada nodo juntando los terminos Kxterm2, Kyterm2 y qterm
     #Se agrupa en una lista "eqSist"

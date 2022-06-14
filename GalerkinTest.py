@@ -22,6 +22,7 @@ tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
 
 #Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
 #y EL("Element list") que contiene la lista de nodos de cada elemento
+
 NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
 
 # graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
@@ -66,8 +67,8 @@ DataFrame = pd.concat(dataFrameList, axis=0)
 #Las ecuaciones se suma deacuerdo a los nodos, para tener #Nodos ecuaciones
 CompressedDF = DataFrame.replace(np.nan,0) #0 donde no hay termino
 CompressedDF = DataFrame.groupby("nodo").sum() #suma por columna nodo
-CompressedDF.to_excel("ef.xlsx") #Para visualizar dataFrame comprimido
-DataFrame.to_excel ("ef2.xlsx" ) #Para visualizar dataFrame original
+#CompressedDF.to_excel("ef.xlsx") #Para visualizar dataFrame comprimido
+#DataFrame.to_excel ("ef2.xlsx" ) #Para visualizar dataFrame original
 
 #Generación de matrices
 matrixFinal = np.matrix(CompressedDF.drop('indep', inplace=False, axis=1)) #Matriz de coeff final
