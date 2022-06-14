@@ -65,14 +65,14 @@ def cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt):
     return U
 
 # --- X = [x, y, t] : Vector de variables --- #
-f = lambda x : 0
-g1 = lambda y : exp(-10*y)
-g2 = lambda y : 250
-g3 = lambda x : 0
-g4 = lambda x : 100
+f = lambda x : 100 # Estado Inicial
+g1 = lambda y : 25 # Frontera y = 0
+g2 = lambda y : 25 # Frontera y = b
+g3 = lambda x : 25 # Frontera x = 0
+g4 = lambda x : 25 # Frontera x = a
 
-xf = 10; yf = 100; tf = 10; c = 2
-nx = 100; ny = 40; nt = 100
+xf = 10; yf = 100; tf = 100; c = 2
+nx = 60; ny = 60; nt = 300
 
 U = cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt)
 
@@ -82,18 +82,22 @@ def plotheatmap(u_k, k):
     hy = yf / (ny - 1)
 
     plt.clf()
-    plt.title(f"Temperature at t ={k*(hx * hy / (4*c)):.3f} unit time")
-    plt.xlabel("x")
-    plt.ylabel("y")
+    plt.title(f"Temperature at t ={tf/nt * k:.3f} unit time")
+    plt.xlabel("Nodos x")
+    plt.ylabel("Nodos y")
   
     # This is to plot u_k (u at time-step k)
-    plt.pcolormesh(u_k, cmap=plt.cm.jet, vmin=0, vmax=250)
+    plt.pcolormesh(u_k, cmap=plt.cm.jet, vmin=0, vmax=100)
     plt.colorbar()
   
     return plt
 
 def animate(k):
   plotheatmap(U[k,:,:], k)
+
+plt.pcolormesh(U[-1,:,:], cmap=plt.cm.jet, vmin= 0, vmax= 100)
+plt.colorbar()
+plt.show()
 
 anim = animation.FuncAnimation(plt.figure(), animate, interval=1, frames=nt-1, repeat=False)
 out = anim.save("heat_equation_solution.gif")
