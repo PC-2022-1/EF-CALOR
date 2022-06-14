@@ -7,14 +7,20 @@ from Mesh import * #Archivo donde esta la función para generar malla y para gra
 from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  diff, Eq, Matrix
 from sympy import *
 from GalerkinFuntion import *
+
+from numpy import *
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import seaborn as sns
+
 #from GalerkinFuntionNormalizado import *
 
 l = 0.6 #Distancia en x
 #l=symbols('l')
 w = 0.6 #Distancia en y
 #w=symbols('w')
-p = 2  #Divisiones en x
-m = 2  #Divisiones en y
+p = 12  #Divisiones en x
+m = 12  #Divisiones en y
 
 elemLength = l/p #Largo del elemento
 elemWidth = w/m  #Ancho del elemento
@@ -83,9 +89,13 @@ TemperatureVector =np.array(CompressedDF.columns ) #Se genera un vector con las 
 #Se genera una lista para guardar como incognitas las temperaturas
 listaTemperaturas=[]
 listaprueba=[]
+listaprueba2=[]
 for i in TemperatureVector:
     listaTemperaturas.append(symbols(str(i)))
     listaprueba.append(str(i))
+
+for ele in listaprueba:
+  listaprueba2.append(int(ele[1:]))
 
 #Para usar la funcion linsolve de numpy 
 vectorFinal = vectorFinal.astype('float32')
@@ -98,19 +108,17 @@ result=np.linalg.solve(matrixFinal, vectorFinal)
 
 matrixCalor = np.zeros((p+1, m+1))
 
-# print(listaprueba)
-
 
 listaSinOrden=[]
-for i in range (0,len(listaprueba)):
-  listaSinOrden.append([listaprueba[i],result[i]])
+for i in range (0,len(listaprueba2)):
+  listaSinOrden.append([listaprueba2[i],result[i]])
 
 def getKey(item):
   return item[0]
 
 listaOrdenada=sorted(listaSinOrden, key=getKey)
 
-print(listaOrdenada)
+# print(listaOrdenada)
 
 contador=0
 for j in range(0,m+1):
@@ -120,3 +128,10 @@ for j in range(0,m+1):
 
 print(matrixCalor)
 
+# plt.imshow(matrixCalor, cmap='hot', interpolation='nearest')
+# plt.show()
+
+ax = sns.heatmap(matrixCalor, linewidth=0.5,cmap="coolwarm")
+
+
+plt.show()
