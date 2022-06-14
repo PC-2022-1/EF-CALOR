@@ -53,7 +53,7 @@ q=1000 #q Flujo especifico de calor Vatios/m3
 eqSist=[]
 dataFrame=pd.DataFrame()
 
-listaLadosConv=[True,True,True,False] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
+listaLadosConv=[True,True,True,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
 
 dataFrameList = []  #Se juntan las dataframe de cada elemento en una lista dataFrameList
 for i in range (0, len(EL)):
@@ -82,14 +82,41 @@ TemperatureVector =np.array(CompressedDF.columns ) #Se genera un vector con las 
 
 #Se genera una lista para guardar como incognitas las temperaturas
 listaTemperaturas=[]
+listaprueba=[]
 for i in TemperatureVector:
     listaTemperaturas.append(symbols(str(i)))
+    listaprueba.append(str(i))
 
 #Para usar la funcion linsolve de numpy 
 vectorFinal = vectorFinal.astype('float32')
 matrixFinal = matrixFinal.astype('float32')
 
-print(TemperatureVector)
+# print(TemperatureVector)
 #Se resuelve el sistema de ecuaciones
 result=np.linalg.solve(matrixFinal, vectorFinal)
-print(result)
+# print(result)
+
+matrixCalor = np.zeros((p+1, m+1))
+
+# print(listaprueba)
+
+
+listaSinOrden=[]
+for i in range (0,len(listaprueba)):
+  listaSinOrden.append([listaprueba[i],result[i]])
+
+def getKey(item):
+  return item[0]
+
+listaOrdenada=sorted(listaSinOrden, key=getKey)
+
+print(listaOrdenada)
+
+contador=0
+for j in range(0,m+1):
+    for i in range (0,p+1):
+        matrixCalor[j,i]=listaOrdenada[contador][1]
+        contador=contador+1
+
+print(matrixCalor)
+
