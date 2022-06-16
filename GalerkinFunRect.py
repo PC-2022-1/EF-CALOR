@@ -1,4 +1,3 @@
-
 #Se desarrolla la funcion que arroja las 4 ecuaciones (por elemento)
 #en terminos de las temperaturas de cada nodo perteneciente al elemento
 #Para un elemento rectangular
@@ -46,7 +45,7 @@ def DevS_y(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no d
         return (l-x) / (l*w)
 
 #Funciones de Galerkin para un elemento de 4 nodos
-def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totallenght, totalwidth, listaLadosConv):
+def galerkinMethodRect(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totallenght, totalwidth, listaLadosConv):
 
     
     x=symbols('x')
@@ -87,10 +86,10 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     #Se evalua en su condicion en x
     Kxterm1 = [0, 0, 0, 0]
     
-    Kxterm1[0] = -h* integrate( Si(0, y, elemLength, elemWidth, 0) * (Taprox(0,y,elemLength,elemWidth,T) - Tf) ,( y, 0 ,elemWidth) ) 
-    Kxterm1[1] = -h* integrate( Si(elemLength, y, elemLength, elemWidth, 1) * (Taprox(elemLength,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth ) )
-    Kxterm1[2] = -h* integrate( Si(elemLength, y, elemLength, elemWidth, 2) * (Taprox(elemLength,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth) )
-    Kxterm1[3] = -h* integrate( Si(0, y, elemLength, elemWidth, 3) * (Taprox(0,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth) )
+    Kxterm1[0] = -h* (1/6)*elemWidth*(-3*Tf+2*T[0]+T[3])
+    Kxterm1[1] = -h* (1/6)*elemWidth*(-3*Tf+2*T[1]+T[2])
+    Kxterm1[2] = -h* (1/6)*elemWidth*(-3*Tf+T[1]+2*T[2])
+    Kxterm1[3] = -h* (1/6)*elemWidth*(-3*Tf+T[0]+2*T[3])
 
     #Se genera un arreglo para el Kyterm1, donde cada entrada corresponde a un nodo.
     #Viene de aplicar las condiciones de equilibrio.
@@ -98,10 +97,10 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     #Ademas se integra deacuerdo a la posicion del nodo en el elemento
     #Se evalua en su condicion en y
     Kyterm1 = [0, 0, 0, 0]
-    Kyterm1[0] = -h* integrate( Si(x, 0, elemLength, elemWidth, 0) * (Taprox(x,0,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[1] = -h* integrate( Si(x, 0, elemLength, elemWidth, 1) * (Taprox(x,0,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[2] = -h* integrate( Si(x, elemWidth, elemLength, elemWidth, 2) * (Taprox(x,elemWidth,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[3] = -h* integrate( Si(x, elemWidth, elemLength, elemWidth, 3) * (Taprox(x,elemWidth,elemLength,elemWidth,T) - Tf) , ( x, 0,elemLength))
+    Kyterm1[0] = -h* (1/6)*elemLength*(-3*Tf+2*T[0]+T[1])
+    Kyterm1[1] = -h* (1/6)*elemLength*(-3*Tf+T[0]+2*T[1])
+    Kyterm1[2] = -h* (1/6)*elemLength*(-3*Tf+2*T[2]+T[3])
+    Kyterm1[3] = -h* (1/6)*elemLength*(-3*Tf+T[2]+2*T[3])
 
 
     #print("h")
