@@ -16,16 +16,17 @@ num= StringVar()                        #variable donde se guarda el dato input
 #definimos la funcion del boton
 def Diff():
     os.system('python copia_diff.py')
+    os.system('python prueba_gif.py')
 
     
 
 #texto informativo
-label1= Label(root, text= "Ingresa las condiciones de frontera: ")
-label1.grid(row=2,padx=10, pady=10)
+# label1= Label(root, text= "Ingresa las condiciones de frontera: ")
+# label1.grid(row=2,padx=10, pady=10)
 
 #entrada del usuario  ingresada como variable
-entry1=Entry(root, textvariable=num, borderwidth=3)
-entry1.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
+# entry1=Entry(root, textvariable=num, borderwidth=3)
+# entry1.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
 
 #Botones
 button1= Button(root, text="Diferencias Finitas", borderwidth=3,command=Diff)#Creamos el boton
