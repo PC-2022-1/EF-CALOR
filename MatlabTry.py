@@ -16,10 +16,36 @@ import matplotlib.animation as animation
 import seaborn as sns
 from scipy.sparse import csr_matrix
 
+def stima3(nodosElemento,newNL ):
+    vertices=[]
+    for element in nodosElemento:
+        vertices.append(newNL[element-1]) 
+    
+    vertices=np.matrix(vertices)
+    d=3
+    # vertices = np.insert(vertices, 0, col, axis=1)
+    # vertices = np.insert(vertices, 0, row, axis=0)
 
-def stima3(V):
-    V
 
+    M1=np.vstack((np.ones((1,d+1)),vertices.transpose()))
+    
+    
+    print(M1)
+    A=np.zeros((1,d))
+    B=np.eye(d)
+    M2=np.vstack((A,B))
+    #print(M2)
+    print(M2)
+    G=np.linalg.solve((M1),(M2))
+    print(G)
+    #print(G)
+    a=[1,2,3]
+    # MM=np.linalg.det(np.vstack((np.ones((1,d+1)),vertices.transpose())))
+    MM=np.linalg.det(np.vstack((np.ones((1,d+1)),vertices.transpose())))*G
+    MM=np.dot(MM,G.transpose())
+    M=MM/6
+    
+    return M
 
 l = 0.6 #Distancia en x
 #l=symbols('l')
@@ -63,13 +89,38 @@ A=csr_matrix(np.zeros((len(NL)))) #matriz vacia del tamaño de las listas
 B=csr_matrix(np.zeros(((len(NL)), 1))) #vector vacia del tamaño de las listas 
 
 #Asembly
+
+#Nueva element list
+col1=[]
+for i in range (1, len(EL)+1):
+    col1.append(i)
+newEl=np.insert(EL, 0, col1, axis=1) #"element3"
+
+col2=[]
+for i in range (1, len(NL)+1):
+    col2.append(i)
+
+newNL=np.insert(NL, 0, col2, axis=1) #"coordinates"
+
 for i in range (0, len(EL)):
-    stima3(EL[i])
+    #col=EL[i]
+    #row=[i+1,NL[i][0],NL[i][1]] #En vez de 1 se pone el número del elemento y la coordenada del nodo que coincide con el valor del elemento
+    #A=(stima3(NL[EL[i]-1], col, row), (newEl[i], newEl[i]))
+    #A[newEl[i]][newEl[i]]= A[newEl[i]][newEl[i]] + stima3(NL[EL[i]-1], col, row)
+    #stima3(NL[EL[i]-1], col, row)
+    (stima3(newEl[i],newNL))
+    
+    EL
 
 
-print(freeNode)
-print(neumann)
-print(dirichlet)
-print(NL)
-print(EL)
+#print(newEl[0])
+print("-----------")
+print(newEl)
+print(newNL)
+print("-----------")
+# print(freeNode)
+# print(neumann)
+# print(dirichlet)
+# print(NL)
+# print(EL)
 
