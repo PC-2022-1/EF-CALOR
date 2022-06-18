@@ -33,11 +33,11 @@ def stima4(vertices):
 
 
 def f(u): 
-    value = np.ones(np.size(u, 0), 0)
+    value = np.ones((np.size(u.reshape(1,2),0), 0))
     return value
 
 def g(u): 
-    value = np.zeros(np.size(u, 0), 0)
+    value = np.zeros((np.size(u, 0), 0))
     return value
 
 def u_d(u): 
