@@ -1,8 +1,7 @@
-
 #Se desarrolla la funcion que arroja las 4 ecuaciones (por elemento)
 #en terminos de las temperaturas de cada nodo perteneciente al elemento
 #Para un elemento rectangular
-
+ 
 #Se importan librerias
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,6 +10,66 @@ from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  dif
 from sympy import *
 import pandas as pd
 from scipy.integrate import dblquad
+
+def GalerkinResult(dataFrameList):
+  #Nuevo dataframe juntando todas las dataFrame con elementos. Teniendo 4x#El ecuaciones
+  DataFrame = pd.concat(dataFrameList, axis=0)
+
+  #Las ecuaciones se suma deacuerdo a los nodos, para tener #Nodos ecuaciones
+  CompressedDF = DataFrame.replace(np.nan,0) #0 donde no hay termino
+  CompressedDF = DataFrame.groupby("nodo").sum() #suma por columna nodo
+  #CompressedDF.to_excel("ef.xlsx") #Para visualizar dataFrame comprimido
+  #DataFrame.to_excel ("ef2.xlsx" ) #Para visualizar dataFrame original
+
+  #Generación de matrices
+  matrixFinal = np.matrix(CompressedDF.drop('indep', inplace=False, axis=1)) #Matriz de coeff final
+  vectorFinal = np.array(CompressedDF['indep']) #Vector independiente para la solucion 
+  CompressedDF.drop('indep', inplace=True, axis=1) #Eliminamos de CompressedDF la columna indep
+  TemperatureVector =np.array(CompressedDF.columns ) #Se genera un vector con las incognitas
+
+
+  #print(matrixFinal)
+  #print(vectorFinal)
+
+  #Se genera una lista para guardar como incognitas las temperaturas
+  listaTemperaturas=[]
+  listaprueba=[]
+  listaprueba2=[]
+  for i in TemperatureVector:
+      listaTemperaturas.append(symbols(str(i)))
+      listaprueba.append(str(i))
+
+  for ele in listaprueba:
+    listaprueba2.append(int(ele[1:]))
+
+  #Para usar la funcion linsolve de numpy 
+  vectorFinal = vectorFinal.astype('float32')
+  matrixFinal = matrixFinal.astype('float32')
+
+  # print(TemperatureVector)
+  #Se resuelve el sistema de ecuaciones
+  result=np.linalg.solve(matrixFinal, vectorFinal)
+  #print(result)
+
+  matrixCalor = np.zeros((p+1, m+1))
+  listaSinOrden=[]
+  for i in range (0,len(listaprueba2)):
+    listaSinOrden.append([listaprueba2[i],result[i]])
+
+  def getKey(item):
+    return item[0]
+
+  listaOrdenada=sorted(listaSinOrden, key=getKey)
+
+  # print(listaOrdenada)
+
+  contador=0
+  for j in range(0,m+1):
+      for i in range (0,p+1):
+          matrixCalor[j,i]=listaOrdenada[contador][1]
+          contador=contador+1
+
+  return  matrixCalor
 
 
 #S es la funcion "HAT" para un elemento de 4 nodos
@@ -46,7 +105,7 @@ def DevS_y(x, y, l , w, i): #l y w son el ancho y el alto de cada elemento, no d
         return (l-x) / (l*w)
 
 #Funciones de Galerkin para un elemento de 4 nodos
-def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totallenght, totalwidth, listaLadosConv):
+def galerkinMethodRect(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totallenght, totalwidth, listaLadosConv):
 
     
     x=symbols('x')
@@ -86,10 +145,11 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     #Ademas se integra deacuerdo a la posicion del nodo en el elemento
     #Se evalua en su condicion en x
     Kxterm1 = [0, 0, 0, 0]
-    Kxterm1[0] = -h* integrate( Si(0, y, elemLength, elemWidth, 0) * (Taprox(0,y,elemLength,elemWidth,T) - Tf) ,( y, 0 ,elemWidth) ) 
-    Kxterm1[1] = -h* integrate( Si(elemLength, y, elemLength, elemWidth, 1) * (Taprox(elemLength,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth ) )
-    Kxterm1[2] = -h* integrate( Si(elemLength, y, elemLength, elemWidth, 2) * (Taprox(elemLength,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth) )
-    Kxterm1[3] = -h* integrate( Si(0, y, elemLength, elemWidth, 3) * (Taprox(0,y,elemLength,elemWidth,T) - Tf) ,( y, 0,elemWidth) )
+    
+    Kxterm1[0] = -h* (1/6)*elemWidth*(-3*Tf+2*T[0]+T[3])
+    Kxterm1[1] = -h* (1/6)*elemWidth*(-3*Tf+2*T[1]+T[2])
+    Kxterm1[2] = -h* (1/6)*elemWidth*(-3*Tf+T[1]+2*T[2])
+    Kxterm1[3] = -h* (1/6)*elemWidth*(-3*Tf+T[0]+2*T[3])
 
     #Se genera un arreglo para el Kyterm1, donde cada entrada corresponde a un nodo.
     #Viene de aplicar las condiciones de equilibrio.
@@ -97,10 +157,10 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
     #Ademas se integra deacuerdo a la posicion del nodo en el elemento
     #Se evalua en su condicion en y
     Kyterm1 = [0, 0, 0, 0]
-    Kyterm1[0] = -h* integrate( Si(x, 0, elemLength, elemWidth, 0) * (Taprox(x,0,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[1] = -h* integrate( Si(x, 0, elemLength, elemWidth, 1) * (Taprox(x,0,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[2] = -h* integrate( Si(x, elemWidth, elemLength, elemWidth, 2) * (Taprox(x,elemWidth,elemLength,elemWidth,T) - Tf) ,( x, 0,elemLength) )
-    Kyterm1[3] = -h* integrate( Si(x, elemWidth, elemLength, elemWidth, 3) * (Taprox(x,elemWidth,elemLength,elemWidth,T) - Tf) , ( x, 0,elemLength))
+    Kyterm1[0] = -h* (1/6)*elemLength*(-3*Tf+2*T[0]+T[1])
+    Kyterm1[1] = -h* (1/6)*elemLength*(-3*Tf+T[0]+2*T[1])
+    Kyterm1[2] = -h* (1/6)*elemLength*(-3*Tf+2*T[2]+T[3])
+    Kyterm1[3] = -h* (1/6)*elemLength*(-3*Tf+T[2]+2*T[3])
 
 
     #print("h")
@@ -240,6 +300,3 @@ def galerkinMethod(elemLength, elemWidth, NL, EL, h, Tf, kx, ky, q, i, totalleng
 
     #La funcion retorna el dataframe correspondiente al elemento i
     return dfelement
-
-
-
