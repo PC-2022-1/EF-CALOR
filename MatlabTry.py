@@ -22,14 +22,11 @@ def stima3(nodosElemento,newNL ):
         vertices.append(newNL[element-1]) 
     
     vertices=np.matrix(vertices)
+    print(vertices)
     d=3
     # vertices = np.insert(vertices, 0, col, axis=1)
     # vertices = np.insert(vertices, 0, row, axis=0)
-
-
-    M1=np.vstack((np.ones((1,d+1)),vertices.transpose()))
-    
-    
+    M1=np.vstack((np.ones((1,d+1)),vertices.transpose()))   
     print(M1)
     A=np.zeros((1,d))
     B=np.eye(d)
@@ -43,8 +40,7 @@ def stima3(nodosElemento,newNL ):
     # MM=np.linalg.det(np.vstack((np.ones((1,d+1)),vertices.transpose())))
     MM=np.linalg.det(np.vstack((np.ones((1,d+1)),vertices.transpose())))*G
     MM=np.dot(MM,G.transpose())
-    M=MM/6
-    
+    M=MM/6    
     return M
 
 l = 0.6 #Distancia en x
@@ -56,26 +52,57 @@ m = 2  #Divisiones en y
 
 elemLength = l/p #Largo del elemento
 elemWidth = w/m  #Ancho del elemento
-tipoDeElemento = 'TRIANGULO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
+tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
 listaLadosConv=[True,True,False,False] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
-
 
 #Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
 #y EL("Element list") que contiene la lista de nodos de cada elemento
 NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
 graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
+
+#Lados i-j i-n condiciones neumann 
+#Lados j-m m-n condiciones dirichlet 
 neumann=[]
 dirichlet=[]
-for i in range (0, len(NL)): #Lados i-j n-j con neumann
-    if (NL[i][0]==0 or NL[i][1]==0):
-        neumann.append(NL[i])
+listaAuxX=[]
+listaAuxY=[]
+for element in EL:
+    for nodo in element:
+        if (NL[nodo-1][0]==0): 
+            listaAuxX.append(nodo)
+        if (NL[nodo-1][1]==0): 
+            listaAuxY.append(nodo)
+    if listaAuxX:
+        neumann += [listaAuxX.copy()]
+    listaAuxX.clear()
+    if listaAuxY:
+        neumann += [listaAuxY.copy()]
+    listaAuxY.clear()
 
-for i in range (0, len(NL)): #Lados j-m m-n con dirichlet
-    if (NL[i][0]==w or NL[i][1]==l):
-        dirichlet.append(NL[i])
+for element in EL:
+    for nodo in element:
+        if (NL[nodo-1][0]==l): 
+            listaAuxX.append(nodo)
+        if (NL[nodo-1][1]==w): 
+            listaAuxY.append(nodo)
+    if listaAuxX:
+        dirichlet += [listaAuxX.copy()]
+    listaAuxX.clear()
+    if listaAuxY:
+        dirichlet += [listaAuxY.copy()]
+    listaAuxY.clear()
 
-neumann  = np.array(neumann)
-dirichlet= np.array(dirichlet)
+
+# for i in range (0, len(NL)): #Lados i-j n-j con neumann
+#     if (NL[i][0]==0 or NL[i][1]==0):
+#         neumann.append(EL[i])
+
+# for i in range (0, len(NL)): #Lados j-m m-n con dirichlet
+#     if (NL[i][0]==w or NL[i][1]==l):
+#         dirichlet.append(EL[i])
+
+neumann   = np.array(neumann)
+dirichlet = np.array(dirichlet)
 
 freeNode=[]
 #Nodos lbres (Nodos interiores)
@@ -102,21 +129,21 @@ for i in range (1, len(NL)+1):
 
 newNL=np.insert(NL, 0, col2, axis=1) #"coordinates"
 
-for i in range (0, len(EL)):
+for i in range (1, len(EL)):
     #col=EL[i]
     #row=[i+1,NL[i][0],NL[i][1]] #En vez de 1 se pone el número del elemento y la coordenada del nodo que coincide con el valor del elemento
     #A=(stima3(NL[EL[i]-1], col, row), (newEl[i], newEl[i]))
     #A[newEl[i]][newEl[i]]= A[newEl[i]][newEl[i]] + stima3(NL[EL[i]-1], col, row)
     #stima3(NL[EL[i]-1], col, row)
-    (stima3(newEl[i],newNL))
+    #(stima3(newEl[i],newNL))
     
     EL
 
 
 #print(newEl[0])
 print("-----------")
-print(newEl)
-print(newNL)
+print(neumann)
+print(dirichlet)
 print("-----------")
 # print(freeNode)
 # print(neumann)

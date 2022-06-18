@@ -79,12 +79,12 @@ def GalerkinResult(dataFrameList):
   # plt.show()
 #from GalerkinFuntionNormalizado import *
 
-l = 0.6 #Distancia en x
+l = 4 #Distancia en x
 #l=symbols('l')
-w = 0.6 #Distancia en y
+w = 4 #Distancia en y
 #w=symbols('w')
-p = 10  #Divisiones en x
-m = 10  #Divisiones en y
+p = 2  #Divisiones en x
+m = 2  #Divisiones en y
 
 #Definicion de condiciones iniciales
 
@@ -105,14 +105,16 @@ q=1000 #q Flujo especifico de calor Vatios/m3   q=-100
 elemLength = l/p #Largo del elemento
 elemWidth = w/m  #Ancho del elemento
 tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
-listaLadosConv=[True,True,False,False] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
+listaLadosConv=[True,True,True,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
 
 
 #Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
 #y EL("Element list") que contiene la lista de nodos de cada elemento
 NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
-#graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
+graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
 
+print(NL)
+print(EL)
 #galerkinMethodRect retorna un dataframe por elemento
 dataFrameList = []  #Se juntan las dataframe de cada elemento en una lista dataFrameList
 for i in range (0, len(EL)):
@@ -121,5 +123,5 @@ for i in range (0, len(EL)):
 
 matrixCalor = GalerkinResult(dataFrameList) #GalerkinResult organiza, combina y reduce los dataframes, los convierte en matrices 
 #y se encuentra la solución al sistema de ecuaciones que se guarda en una matriz solución (matrixCalor)
-ax = sns.heatmap(matrixCalor, linewidth=0.5,cmap="Spectral_r")
+ax = sns.heatmap(matrixCalor, linewidth=0.5,cmap="jet")
 plt.show()
