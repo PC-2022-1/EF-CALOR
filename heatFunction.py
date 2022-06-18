@@ -16,18 +16,19 @@ def stima3(vertices):
 
 def stima4(vertices):
 
-    D_phi = np.array([[vertices[1,:] - vertices[0,:]], [vertices[3,:] - vertices[0,:]]])
-    D_phiTrans =D_phi.transpose()
+    D_phi = np.vstack((vertices[1,:] - vertices[0,:], vertices[3,:] - vertices[0,:]))
+    D_phiTrans = D_phi.transpose()
    
-    B = np.linalg.inv (np.dot (D_phi, D_phiTrans) )
+    B = np.linalg.inv (D_phiTrans @ D_phi )
 
     C1matrix= [[[2, -2],[-2,2]], [[3, 0],[0,-3]],  [[2, 1],[1,2]] ]
-    C1 = np.matrix(C1matrix[0]) * B[0,0] + np.matrix(C1matrix[1]) * B[0,1] + np.matrix(C1matrix[3]) * B[1,1] 
+
+    C1 = np.array(C1matrix[0]) * B[0,0] + np.array(C1matrix[1]) * B[0,1] + np.array(C1matrix[2]) * B[1,1] 
 
     C2matrix= [[[-1, 1],[1,-1]], [[-3, 0],[0,3]],  [[-1, -2],[-2,-1]] ]
-    C2 = np.matrix(C2matrix[0]) * B[0,0] + np.matrix(C2matrix[1]) * B[0,1] + np.matrix(C2matrix[3]) * B[1,1] 
+    C2 = np.matrix(C2matrix[0]) * B[0,0] + np.matrix(C2matrix[1]) * B[0,1] + np.matrix(C2matrix[2]) * B[1,1] 
 
-    M = (np.linalg.det(D_phiTrans) * np.matrix ([C1, C2], [C2, C1])) / 6
+    M = (np.linalg.det(D_phiTrans) * np.vstack((np.hstack((C1, C2)), np.hstack((C2, C1))))) / 6
     return M
 
 
