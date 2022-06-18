@@ -12,6 +12,8 @@ from numpy import *
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import seaborn as sns
+import sys
+
 
 
 def GalerkinResult(dataFrameList):
@@ -79,12 +81,12 @@ def GalerkinResult(dataFrameList):
   # plt.show()
 #from GalerkinFuntionNormalizado import *
 
-l = 0.6 #Distancia en x
+l = float(sys.argv[1]) #Distancia en x 0.6
 #l=symbols('l')
-w = 0.6 #Distancia en y
+w = float(sys.argv[2]) #Distancia en y  0.6
 #w=symbols('w')
-p = 10  #Divisiones en x
-m = 10  #Divisiones en y
+p = int(sys.argv[3])  #Divisiones en x  10
+m = int(sys.argv[4])  #Divisiones en y  10
 
 #Definicion de condiciones iniciales
 
@@ -111,7 +113,8 @@ listaLadosConv=[True,True,False,False] #Lados i-j, j-m, m-n, n-i Lista con lados
 #Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
 #y EL("Element list") que contiene la lista de nodos de cada elemento
 NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
-graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
+#graph_mesh(tipoDeElemento,NL,EL) #Graficar malla de mesh.py
+
 
 #galerkinMethodRect retorna un dataframe por elemento
 dataFrameList = []  #Se juntan las dataframe de cada elemento en una lista dataFrameList
