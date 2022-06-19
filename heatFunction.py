@@ -1,5 +1,7 @@
 
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.tri as tri
 
 def stima3(vertices):
     d  = np.size(vertices, 1)
@@ -33,13 +35,25 @@ def stima4(vertices):
 
 
 def f(u): 
-    value = np.ones((np.size(u.reshape(1,2),0), 0))
+    value = np.ones((np.size(u.reshape(1,2), 0), 1))
     return value
 
 def g(u): 
-    value = np.zeros((np.size(u, 0), 0))
+    value = np.zeros((np.size(u, 0), 1))
     return value
 
 def u_d(u): 
-    value = np.zeros(np.size(u, 0), 0)
+    value = np.zeros((np.size(u, 0), 1))
     return value
+
+def show(elements4, coordinates, u):
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(projection= '3d')
+
+    X, Y = coordinates[:, 0], coordinates[:, -1]
+    result = ax.plot_trisurf(X, Y, u, triangles= elements4, linewidth=0.2,  cmap='jet')
+
+    cbar = fig.colorbar(result)
+
+    plt.show()

@@ -1,5 +1,4 @@
 from numpy import *
-from sympy import ZeroMatrix
 from Mesh import *
 from heatFunction import *
 from scipy.sparse import *
@@ -58,6 +57,9 @@ for element in EL:
         dirichlet += [listaAuxY.copy()]
     listaAuxY.clear()
 
+neumann = array(neumann)
+dirichlet = array(dirichlet)
+
 ZeroMatrix = np.zeros((size(coordinates, 0) , size(coordinates, 0)))
 # Instantiate a compressed sparse column matrix
 A = lil_matrix(ZeroMatrix)
@@ -72,12 +74,10 @@ b = zeros((size(coordinates, 0), 1))
 for j in range(size(elements4, 0)):
     k=0
     for i in elements4[j]-1:
-        print(A[elements4[j]-1, i])
         aux[elements4[j]-1, i] = stima4(coordinates[elements4[j]-1, :])[k]
         k=k+1
     A = A + aux
     aux =lil_matrix(ZeroMatrix)
-    print(A.toarray())
 
 # Volume Forces
 
@@ -92,7 +92,7 @@ for j in range(size(elements4, 0)):
 
 # Neumann conditions
 if len(neumann) > 0:
-    print(neumann)
+
     for j in range(size(neumann, 0)):
         #el problema esta en  b[neumann[j]-1] y en g (reemplazado por 0 mientras tanto)
         #print(coordinates[neumann[j, 1]-1, :])
@@ -102,12 +102,13 @@ if len(neumann) > 0:
 
 u = zeros_like(b)
 
-BoundNodes = unique(dirichlet)
+BoundNodes = array(unique(dirichlet)) -1
 u[BoundNodes] = u_d(coordinates[BoundNodes, :])
 b = b - A * u
 
 FreeNodes = setdiff1d(range(size(coordinates, 0)), BoundNodes)
 
-u[FreeNodes] = linalg.inv(A[FreeNodes, FreeNodes]) * b
-
-#show(elements3, elements4, coordinates, full(u))
+u[FreeNodes] = linalg.inv(A[FreeNodes][:, FreeNodes].toarray()) @ b[FreeNodes]
+u = u[:, 0]
+print(u)
+show(elements4, coordinates, u)
