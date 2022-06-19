@@ -25,46 +25,15 @@ else:
     elements3 = EL
 
 ## --- Se generan Newman & Dirichlet --- ##
+#Lados i-j, j-m, m-n, n-i Que tipo de condicion de frontera
+#Si es True es Neumann, si es False es dirichlet
+condicionesDeFrontera = [True, False, False, True]  #i-j n-i neumann, #j-m, m-n dirichlet
+neumann,dirichlet = neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l)
 
-neumann=[]
-dirichlet=[]
-listaAuxX=[]
-listaAuxY=[]
-
-for element in EL:
-    for nodo in element:
-        if (NL[nodo-1][0]==0): 
-            listaAuxX.append(nodo)
-        if (NL[nodo-1][1]==0): 
-            listaAuxY.append(nodo)
-    if listaAuxX:
-        neumann += [listaAuxX.copy()]
-    listaAuxX.clear()
-    if listaAuxY:
-        neumann += [listaAuxY.copy()]
-    listaAuxY.clear()
-
-for element in EL:
-    for nodo in element:
-        if (NL[nodo-1][0]==l): 
-            listaAuxX.append(nodo)
-        if (NL[nodo-1][1]==w): 
-            listaAuxY.append(nodo)
-    if listaAuxX:
-        dirichlet += [listaAuxX.copy()]
-    listaAuxX.clear()
-    if listaAuxY:
-        dirichlet += [listaAuxY.copy()]
-    listaAuxY.clear()
-
-neumann = array(neumann)
-dirichlet = array(dirichlet)
-
+#Para matriz A y vector b
 ZeroMatrix = np.zeros((size(coordinates, 0) , size(coordinates, 0)))
-# Instantiate a compressed sparse column matrix
 A = lil_matrix(ZeroMatrix)
 aux = lil_matrix(ZeroMatrix)
-
 b = zeros((size(coordinates, 0), 1))
 
 ## Assembly
@@ -79,8 +48,9 @@ for j in range(size(elements4, 0)):
     A = A + aux
     aux =lil_matrix(ZeroMatrix)
 
-# Volume Forces
 
+#-----------b-------------#
+# Volume Forces
 #for j in range(size(elements3, 0)):
 #    b[elements3[j, :]] = b[elements3[j, :]] + linalg.det(vstack(ones(1, 3), coordinates[elements3[j,:], :].T)) * f(sum(coordinates[elements3[j,:], :]) / 3) / 6
 for j in range(size(elements4, 0)):
@@ -90,7 +60,7 @@ for j in range(size(elements4, 0)):
     b[elements4[j, :]-1] = b[elements4[j, :]-1] + linalg.det(H) * 1 / 4
 
 
-# Neumann conditions
+#Neumann conditions
 if len(neumann) > 0:
 
     for j in range(size(neumann, 0)):
@@ -111,6 +81,8 @@ FreeNodes = setdiff1d(range(size(coordinates, 0)), BoundNodes)
 
 u[FreeNodes] = linalg.inv(A[FreeNodes][:, FreeNodes].toarray()) @ b[FreeNodes]
 u = u[:, 0].reshape(coordinates[:, -1].shape)
-print(u)
 
+
+print(u)
 show(elements4, coordinates, u)
+show2d(u, p)
