@@ -9,15 +9,15 @@ l = 4 #Distancia en x
 #l=symbols('l')
 w = 4 #Distancia en y
 #w=symbols('w')
-p = 2  #Divisiones en x
-m = 2  #Divisiones en y
+p = 5  #Divisiones en x
+m = 5  #Divisiones en y
 tipoDeElemento = 'CUADRADO'
 
 # --- Se generan los archivos a cargar --- ##
 
 NL, EL = uniform_mesh(l, w, p, m, tipoDeElemento)
 
-coordinates = NL
+coordinates = array(NL)
 
 if tipoDeElemento == 'CUADRADO':
     elements4 = EL
@@ -101,6 +101,7 @@ if len(neumann) > 0:
 
 
 u = zeros_like(b)
+u = u[:, 0].reshape(b.shape)
 
 BoundNodes = array(unique(dirichlet)) -1
 u[BoundNodes] = u_d(coordinates[BoundNodes, :])
@@ -109,6 +110,7 @@ b = b - A * u
 FreeNodes = setdiff1d(range(size(coordinates, 0)), BoundNodes)
 
 u[FreeNodes] = linalg.inv(A[FreeNodes][:, FreeNodes].toarray()) @ b[FreeNodes]
-u = u[:, 0]
+u = u[:, 0].reshape(coordinates[:, -1].shape)
 print(u)
+
 show(elements4, coordinates, u)

@@ -42,8 +42,12 @@ def g(u):
     value = np.zeros((np.size(u, 0), 1))
     return value
 
-def u_d(u): 
-    value = np.zeros((np.size(u, 0), 1))
+def u_d(u):
+    w = u.copy()
+    w = w[:, 0] * w[:, -1]
+    w = w.reshape(np.zeros((np.size(u, 0), 1)).shape)
+    f = lambda x : np.tan(x)
+    value = f(w)
     return value
 
 def show(elements4, coordinates, u):
@@ -54,6 +58,6 @@ def show(elements4, coordinates, u):
     X, Y = coordinates[:, 0], coordinates[:, -1]
     result = ax.plot_trisurf(X, Y, u, triangles= elements4, linewidth=0.2,  cmap='jet')
 
-    cbar = fig.colorbar(result)
+    fig.colorbar(result)
 
     plt.show()
