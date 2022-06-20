@@ -40,22 +40,23 @@ def stima4(vertices):
     M = (np.linalg.det(D_phiTrans) * np.vstack((np.hstack((C1, C2)), np.hstack((C2, C1))))) / 6
     return M
 
-
-def f(u): 
-    value = np.ones((np.size(u.reshape(1,2), 0), 1))
-    return value
-
-def g(u): 
-    value = np.zeros((np.size(u, 0), 1))
-    return value
-
-def u_d(u):
+def f(u, fun): 
     w = u.copy()
-    w = w[:, 0] * w[:, -1]
-    w = w.reshape(np.zeros((np.size(u, 0), 1)).shape)
-    f = lambda x : np.tan(x)
-    value = f(w)
-    #value = np.zeros((np.size(u, 0), 1))
+    w = w[0] * w[-1] # Tipo de argumento
+    value = fun(w)
+    return value
+
+def g(u, fun):
+    w = u.copy()
+    w = w[0] * w[-1] # Tipo de argumento
+    value = fun(w)
+    return value
+
+def u_d(u, fun):
+    w = u.copy()
+    w = w[:, 0] * w[:, -1] # Tipo de argumento
+    w = w.reshape((np.size(u, 0), 1))
+    value = fun(w)
     return value
 
 def show(elements4, coordinates, u):
