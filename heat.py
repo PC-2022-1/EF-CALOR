@@ -9,16 +9,16 @@ from scipy.sparse import *
 # Dimentional Parameters
 l = 4 # Distancia en x
 w = 4 # Distancia en y
-p = 1e3 # Divisiones en x
-m = 1e3 # Divisiones en y
+p = 30 # Divisiones en x
+m = 30 # Divisiones en y
 
 # Type Parameters
 tipoDeElemento = 'CUADRADO'
 
 # Behaviour Parameters
-f_fun = lambda x : 2*exp(x)
-g_fun = lambda x : 2*exp(x)
-u_d_fun = lambda x : exp(x)
+f_fun = lambda x : 0
+g_fun = lambda x : 2*x
+u_d_fun = lambda x : x
 
 # --- Se generan los archivos a cargar --- ##
 
@@ -91,15 +91,14 @@ FreeNodes = setdiff1d(range(size(coordinates, 0)), BoundNodes)
 u[FreeNodes] = linalg.inv(A[FreeNodes][:, FreeNodes].toarray()) @ b[FreeNodes]
 u = u[:, 0].reshape(coordinates[:, -1].shape)
 
-# show(elements4, coordinates, u)
+show(elements4, coordinates, u)
 matrixCalor = show2d(u, p)
 
 matrixTeorica = np.zeros(array(matrixCalor).shape)
 
 for row, Row in enumerate(matrixTeorica):
     for column, Column in enumerate(Row):
-        matrixTeorica[row, column] = np.exp( l/p * row + w/m * column )
+        matrixTeorica[row, column] = l/p * row + w/m * column
 
 #print( matrixTeorica - matrixCalor )
 print( linalg.norm(matrixTeorica - matrixCalor) /  linalg.norm(matrixTeorica) )
-

@@ -54,6 +54,7 @@ def g(u, fun):
 
 def u_d(u, fun):
     w = u.copy()
+    print(w, w**2)
     w = np.sum(w, axis=1)
     w = w.reshape((len(u), 1))
     value = fun(w)
