@@ -1,8 +1,11 @@
 
+from re import X
+from tkinter import Y
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import seaborn as sns
+from matplotlib import cm
 
 
 #Definicion de funciones usadas en heat.py
@@ -19,7 +22,7 @@ def stima3(vertices):
 
     MM=np.linalg.det(np.vstack((np.ones((1,d+1)),vertices.transpose())))*G
     MM=np.dot(MM,G.transpose())
-    M=MM / np.prod([i for i in range (0,d)])    
+    M=MM / 2   
 
     return M
 
@@ -42,48 +45,47 @@ def stima4(vertices):
 
 def f(u, fun): 
     w = u.copy()
-    w = w[0] + w[-1] # Tipo de argumento
+    # w = w[0]+w[-1] # Tipo de argumento
     value = fun(w)
     return value
 
 def g(u, fun):
     w = u.copy()
-    w = w[0] + w[-1] # Tipo de argumento
+    # w = w[0]+w[-1] # Tipo de argumento
     value = fun(w)
     return value
 
 def u_d(u, fun):
     w = u.copy()
-    print(w, w**2)
+    # v=w[:,-1]
+    # ww=w[:,0]
+    # w=(v**2)+(ww**2)
     w = np.sum(w, axis=1)
     w = w.reshape((len(u), 1))
     value = fun(w)
     return value
 
-def show(elements4, coordinates, u):
+def show(elementsx, coordinates, u, tipodeElemento, p):
     
-    fig = plt.figure()
-    ax = fig.add_subplot(projection= '3d')
-
-    X, Y = coordinates[:, 0], coordinates[:, -1]
-    result = ax.plot_trisurf(X, Y, u, triangles= elements4, linewidth=0.2,  cmap=plt.cm.Spectral_r)
-
-    fig.colorbar(result)
-
-    plt.show()
-
-def show2d(u, p):
     matrixCalor = []
+    v=u.copy()
+    while v.size > 0:
+        matrixCalor.append(v[:p+1])
+        v = v[p+1:]
+    if tipodeElemento == "CUADRADO":
+        ax = sns.heatmap(matrixCalor, linewidth=0.01,cmap="Spectral_r",  cbar_kws={'label': 'Temperatura °C'})
+        ax.invert_yaxis()
+        plt.show()    
+    else:
+        fig = plt.figure()
+        ax = fig.add_subplot(projection= '3d')
 
-    while u.size > 0:
-        matrixCalor.append(u[:p+1])
-        u = u[p+1:]
-
-    ax = sns.heatmap(matrixCalor, linewidth=0.01,cmap="Spectral_r",  cbar_kws={'label': 'Temperatura °C'})
-    ax.invert_yaxis()
-    plt.show()
-
+        X, Y = coordinates[:, 0], coordinates[:, -1]
+        result = ax.plot_trisurf(X, Y, u, linewidth=0.2,  cmap=plt.cm.Spectral_r)
+        fig.colorbar(result)
+        plt.show()
     return matrixCalor
+
 
 def neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l):
     #Lados i-j, j-m, m-n, n-i Que tipo de condicion de frontera
@@ -114,15 +116,15 @@ def neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l):
                     listaAuxY.append(nodo) 
                 else: listaAuxY_D.append(nodo)
 
-        if listaAuxX:
+        if listaAuxX and len(listaAuxX)==2:
             neumann += [listaAuxX.copy()]
-        if listaAuxX_D:
+        if listaAuxX_D and len(listaAuxX_D)==2:
             dirichlet += [listaAuxX_D.copy()]
         listaAuxX.clear()
         listaAuxX_D.clear()
-        if listaAuxY:
+        if listaAuxY and len(listaAuxY)==2:
             neumann += [listaAuxY.copy()]
-        if listaAuxY_D:
+        if listaAuxY_D and len(listaAuxY_D)==2:
             dirichlet += [listaAuxY_D.copy()]
         listaAuxY.clear()
         listaAuxY_D.clear()

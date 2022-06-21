@@ -9,16 +9,16 @@ from scipy.sparse import *
 # Dimentional Parameters
 l = 4 # Distancia en x
 w = 4 # Distancia en y
-p = 30 # Divisiones en x
-m = 30 # Divisiones en y
+p = 10 # Divisiones en x
+m = 10 # Divisiones en y
 
 # Type Parameters
-tipoDeElemento = 'CUADRADO'
+tipoDeElemento = 'TRIANGULO'
 
 # Behaviour Parameters
 f_fun = lambda x : 0
-g_fun = lambda x : 2*x
-u_d_fun = lambda x : x
+g_fun = lambda x : 10
+u_d_fun = lambda x : 100
 
 # --- Se generan los archivos a cargar --- ##
 
@@ -35,9 +35,14 @@ else:
 # Lados i-j, j-m, m-n, n-i Que tipo de condicion de frontera
 # Si es True es Neumann, si es False es dirichlet
 
-condicionesDeFrontera = [False, False, False, False]  #i-j n-i neumann, #j-m, m-n dirichlet
+condicionesDeFrontera = [False, True, True, True]  #i-j n-i neumann, #j-m, m-n dirichlet
 
 neumann,dirichlet = neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l)
+
+# if tipoDeElemento == 'TRIANGULO':
+#     neumann   =np.array([[1,4],[1,2],[2,3],[4,7]])
+#     dirichlet =np.array([[3,6],[6,9],[9,8],[8,7]])
+# else: neumann,dirichlet = neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l)
 
 # Generación de Matriz A & b
 
@@ -52,24 +57,39 @@ b = zeros((size(coordinates, 0), 1))
 #for j in range(size(elements3, 0)):
 #    A[elements4[j, :], elements4[j, :]] = A[elements3[j, :], elements3[j, :]] + stima3(coordinates[elements3[j, :], :])
 
-for j in range(size(elements4, 0)):
-    k=0
-    for i in elements4[j]-1:
-        aux[elements4[j]-1, i] = stima4(coordinates[elements4[j]-1, :])[k]
-        k=k+1
-    A = A + aux
-    aux =lil_matrix(ZeroMatrix)
+if tipoDeElemento == 'CUADRADO':
+    for j in range(size(elements4, 0)):
+        k=0
+        for i in elements4[j]-1:
+            aux[elements4[j]-1, i] = stima4(coordinates[elements4[j]-1, :])[k]
+            k=k+1
+        A = A + aux
+        aux =lil_matrix(ZeroMatrix)
+else: 
+    for j in range(size(elements3, 0)):
+        k=0
+        for i in elements3[j]-1:
+            aux[elements3[j]-1, i] = stima3(coordinates[elements3[j]-1, :])[k]
+            k=k+1
+        A = A + aux
+        aux =lil_matrix(ZeroMatrix)
+
 
 #-----------b-------------#
 # Volume Forces
 #for j in range(size(elements3, 0)):
 #    b[elements3[j, :]] = b[elements3[j, :]] + linalg.det(vstack(ones(1, 3), coordinates[elements3[j,:], :].T)) * f(sum(coordinates[elements3[j,:], :]) / 3) / 6
 
-for j in range(size(elements4, 0)):
-    H = np.vstack((ones((1, 3)), coordinates[elements4[j,:3]-1, :].T))
-
-    b[elements4[j, :]-1] = b[elements4[j, :]-1] + linalg.det(H) * f(sum(coordinates[elements4[j,:]-1, :], axis=0) / 4, f_fun)  / 4
-    #b[elements4[j, :]-1] = b[elements4[j, :]-1] + linalg.det(H) * 1 / 4
+if tipoDeElemento == 'CUADRADO':
+    for j in range(size(elements4, 0)):
+        H = np.vstack((ones((1, 3)), coordinates[elements4[j,:3]-1, :].T))
+        
+        b[elements4[j, :]-1] = b[elements4[j, :]-1] + linalg.det(H) * f(sum(coordinates[elements4[j,:]-1, :], axis=0) / 4, f_fun)  / 4
+        #b[elements4[j, :]-1] = b[elements4[j, :]-1] + linalg.det(H) * 1 / 4
+else: 
+    for j in range(size(elements3, 0)):
+        H = np.vstack((ones((1, 3)), coordinates[elements3[j,:]-1, :].T))
+        b[elements3[j, :]-1] = b[elements3[j, :]-1] + linalg.det(H) * f(sum(coordinates[elements3[j,:]-1, :], axis=0) / 3, f_fun)  / 6
 
 
 # Neumann conditions
@@ -91,8 +111,12 @@ FreeNodes = setdiff1d(range(size(coordinates, 0)), BoundNodes)
 u[FreeNodes] = linalg.inv(A[FreeNodes][:, FreeNodes].toarray()) @ b[FreeNodes]
 u = u[:, 0].reshape(coordinates[:, -1].shape)
 
-show(elements4, coordinates, u)
-matrixCalor = show2d(u, p)
+
+# show(elements4, coordinates, u)
+if tipoDeElemento=='CUADRADO':
+    matrixCalor = show(elements4, coordinates, u, 'CUADRADO', p)
+else:
+    matrixCalor = show(elements3, coordinates, u, 'TRIANGULO', p)
 
 matrixTeorica = np.zeros(array(matrixCalor).shape)
 
@@ -102,3 +126,4 @@ for row, Row in enumerate(matrixTeorica):
 
 #print( matrixTeorica - matrixCalor )
 print( linalg.norm(matrixTeorica - matrixCalor) /  linalg.norm(matrixTeorica) )
+print(u)
