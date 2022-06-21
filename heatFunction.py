@@ -82,6 +82,8 @@ def show2d(u, p):
     ax.invert_yaxis()
     plt.show()
 
+    return matrixCalor
+
 def neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l):
     #Lados i-j, j-m, m-n, n-i Que tipo de condicion de frontera
     #Si es True es Neumann, si es False es dirichlet

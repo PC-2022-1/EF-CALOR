@@ -9,8 +9,8 @@ from scipy.sparse import *
 # Dimentional Parameters
 l = 4 # Distancia en x
 w = 4 # Distancia en y
-p = 2 # Divisiones en x
-m = 2  # Divisiones en y
+p = 1e3 # Divisiones en x
+m = 1e3 # Divisiones en y
 
 # Type Parameters
 tipoDeElemento = 'CUADRADO'
@@ -35,7 +35,7 @@ else:
 # Lados i-j, j-m, m-n, n-i Que tipo de condicion de frontera
 # Si es True es Neumann, si es False es dirichlet
 
-condicionesDeFrontera = [True, False, False, True]  #i-j n-i neumann, #j-m, m-n dirichlet
+condicionesDeFrontera = [False, False, False, False]  #i-j n-i neumann, #j-m, m-n dirichlet
 
 neumann,dirichlet = neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l)
 
@@ -91,5 +91,15 @@ FreeNodes = setdiff1d(range(size(coordinates, 0)), BoundNodes)
 u[FreeNodes] = linalg.inv(A[FreeNodes][:, FreeNodes].toarray()) @ b[FreeNodes]
 u = u[:, 0].reshape(coordinates[:, -1].shape)
 
-show(elements4, coordinates, u)
-show2d(u, p)
+# show(elements4, coordinates, u)
+matrixCalor = show2d(u, p)
+
+matrixTeorica = np.zeros(array(matrixCalor).shape)
+
+for row, Row in enumerate(matrixTeorica):
+    for column, Column in enumerate(Row):
+        matrixTeorica[row, column] = np.exp( l/p * row + w/m * column )
+
+#print( matrixTeorica - matrixCalor )
+print( linalg.norm(matrixTeorica - matrixCalor) /  linalg.norm(matrixTeorica) )
+
