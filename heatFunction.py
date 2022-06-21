@@ -13,8 +13,8 @@ from matplotlib import cm
 #Funciones f, g y u_d
 #Y funciones para graficas en 2d y 3d (3er eje temperatura)
 
-def stima3(vertices):
-    d  = np.size(vertices, 1)
+def stima3(vertices): #Genera la matriz de esfuerzos para un elemento tipo triangular
+    d  = np.size(vertices, 1) 
 
     G1 = np.vstack((np.ones((1,d+1)),vertices.transpose()))  
     G2 = np.vstack((np.zeros((1,d)),np.eye(d)))
@@ -26,7 +26,7 @@ def stima3(vertices):
 
     return M
 
-def stima4(vertices):
+def stima4(vertices): #Genera la matriz de esfuerzos para un elemento tipo cuadrado
 
     D_phi = np.vstack((vertices[1,:] - vertices[0,:], vertices[3,:] - vertices[0,:]))
     D_phiTrans = D_phi.transpose()
@@ -43,19 +43,20 @@ def stima4(vertices):
     M = (np.linalg.det(D_phiTrans) * np.vstack((np.hstack((C1, C2)), np.hstack((C2, C1))))) / 6
     return M
 
+
 def f(u, fun): 
     w = u.copy()
-    # w = w[0]+w[-1] # Tipo de argumento
+    w = w[0]+w[-1]  #Argumento que entra a la funcion.
     value = fun(w)
     return value
 
-def g(u, fun):
+def g(u, fun): #Valor derivada u en fronteras neumann
     w = u.copy()
-    # w = w[0]+w[-1] # Tipo de argumento
+    w = w[0]+w[-1]  #Argumento que entra a la funcion.
     value = fun(w)
     return value
 
-def u_d(u, fun):
+def u_d(u, fun):  #Valor en las fronteras dirichlet
     w = u.copy()
     # v=w[:,-1]
     # ww=w[:,0]
@@ -65,12 +66,12 @@ def u_d(u, fun):
     value = fun(w)
     return value
 
-def show(elementsx, coordinates, u, tipodeElemento, p):
+def show(coordinates, u, tipodeElemento, p): #Para un elemento tipo triangular genera una grafica 3d, para un elemento tipo cuadrado genera una grafica 2d
     
     matrixCalor = []
-    v=u.copy()
+    v =u.copy()
     while v.size > 0:
-        matrixCalor.append(v[:p+1])
+        matrixCalor.append(v[:p+1])  #Matriz en orden para graficar en 2d con sns
         v = v[p+1:]
     if tipodeElemento == "CUADRADO":
         ax = sns.heatmap(matrixCalor, linewidth=0.01,cmap="Spectral_r",  cbar_kws={'label': 'Temperatura °C'})
@@ -79,7 +80,6 @@ def show(elementsx, coordinates, u, tipodeElemento, p):
     else:
         fig = plt.figure()
         ax = fig.add_subplot(projection= '3d')
-
         X, Y = coordinates[:, 0], coordinates[:, -1]
         result = ax.plot_trisurf(X, Y, u, linewidth=0.2,  cmap=plt.cm.Spectral_r)
         fig.colorbar(result)
@@ -88,14 +88,21 @@ def show(elementsx, coordinates, u, tipodeElemento, p):
 
 
 def neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l):
-    #Lados i-j, j-m, m-n, n-i Que tipo de condicion de frontera
-    #Si es True es Neumann, si es False es dirichlet
+    # Se generan listas que contienen condiciones 
+    # lista condicionesDeFrontera: Lado inferior, derecho, superior, izquierdo 
+    # Si es True es Neumann, si es False es dirichlet
     neumann=[]
     dirichlet=[]
     listaAuxX=[]
     listaAuxY=[]
     listaAuxX_D=[]
     listaAuxY_D=[]
+
+    #Recorre cada elemento y cada nodo del elemento, verifica si se encuentra en una frontera
+    #Y luego el tipo de condicion de la misma. 
+    #Deacuerdo a eso se guarda en una lista diferente que se retorna al final
+
+    #Se usan listas auxiliares para guardar dos nodos por elemento en la lista
 
     for element in EL:
         for nodo in element:
