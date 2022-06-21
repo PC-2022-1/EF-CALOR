@@ -3,17 +3,16 @@ import os
 import sys
 
 from matplotlib.pyplot import clf
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Mesh import uniform_mesh,graph_mesh
 
 root=Tk()
-
-
-
 root.title("Analisis de Elementos Finitos")                       #Creamos el root que contiene todo
 #root.geometry("450x150")
 root.resizable(1,1)                    #la ventana no se puede cambiar de tamaño
 #root.iconbitmap("fibo.ico")                                              #icono
-#root.config(bg="Gray")
+root.config(bg="#D7ECDE")
+
 
 
 
@@ -24,23 +23,24 @@ var_p= IntVar()
 var_m= IntVar()
 
 #definimos la funcion del boton
-def galerkin():
-    os.system(f'python GalerkinTest.py {var_l.get()} {var_w.get()} {var_p.get()} {var_m.get()}')
-def diferenciasFinitas():
-    os.system(f'python copia_diff.py')
+
 def Continuar():
     button2= Button(root, text="Estacionario(Galerkin)", borderwidth=3, command=galerkin)#Creamos el boton
-    button2.grid(row=18,column=1)
+    button2.grid(row=6,column=1,padx=10, pady=10)
     button2.config(cursor="hand2")
-    button2= Button(root, text="Viajero (Diferencias finitas)", borderwidth=3, command=diferenciasFinitas)#Creamos el boton
-    button2.grid(row=18,column=2)
-    button2.config(cursor="hand2")
+    
+    button3= Button(root, text="Viajero (Diferencias finitas)", borderwidth=3, command=diferenciasFinitas)#Creamos el boton
+    button3.grid(row=6,column=2,padx=10, pady=10)
+    button3.config(cursor="hand2")
     clf()
     tipoDeElemento = 'CUADRADO'
     NL,EL = uniform_mesh(var_l.get(), var_w.get(), var_p.get(), var_m.get(), tipoDeElemento) # Generar malla
     graph_mesh(tipoDeElemento,NL,EL) #Graficar malla de mesh.py
 
-    
+def galerkin():
+    os.system(f'python heat.py {var_l.get()} {var_w.get()} {var_p.get()} {var_m.get()}')
+def diferenciasFinitas():
+    os.system(f'python copia_diff.py')
 
 #texto informativo
 label1= Label(root, text= "Ingresa la Descripción de la malla: ")
@@ -69,7 +69,7 @@ entrada_m.grid(row=4, column=2, columnspan=1, padx=10, pady=10)
 
 #Botones
 button1= Button(root, text="Continuar", borderwidth=3,command=Continuar)#Creamos el boton
-button1.grid(row=10,column=1)
+button1.grid(row=5,column=1)
 button1.config(cursor="hand2")
 
 # button2= Button(root, text="Aproximación Galerkin", borderwidth=3)#Creamos el boton
