@@ -105,7 +105,7 @@ q=1000 #q Flujo especifico de calor Vatios/m3   q=-100
 elemLength = l/p #Largo del elemento
 elemWidth = w/m  #Ancho del elemento
 tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
-listaLadosConv=[True,True,True,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
+listaLadosConv=[False,True,True,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
 
 
 #Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
@@ -124,4 +124,5 @@ for i in range (0, len(EL)):
 matrixCalor = GalerkinResult(dataFrameList) #GalerkinResult organiza, combina y reduce los dataframes, los convierte en matrices 
 #y se encuentra la solución al sistema de ecuaciones que se guarda en una matriz solución (matrixCalor)
 ax = sns.heatmap(matrixCalor, linewidth=0.5,cmap="jet")
+ax.invert_yaxis()
 plt.show()

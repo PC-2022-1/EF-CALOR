@@ -9,16 +9,16 @@ from scipy.sparse import *
 # Dimentional Parameters
 l = 4 # Distancia en x
 w = 4 # Distancia en y
-p = 10  # Divisiones en x
-m = 10  # Divisiones en y
+p = 2 # Divisiones en x
+m = 2  # Divisiones en y
 
 # Type Parameters
 tipoDeElemento = 'CUADRADO'
 
 # Behaviour Parameters
-f_fun = lambda x : 1
-g_fun = lambda x : 1
-u_d_fun = lambda x : 0
+f_fun = lambda x : 2*exp(x)
+g_fun = lambda x : 2*exp(x)
+u_d_fun = lambda x : exp(x)
 
 # --- Se generan los archivos a cargar --- ##
 

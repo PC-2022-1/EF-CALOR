@@ -42,20 +42,20 @@ def stima4(vertices):
 
 def f(u, fun): 
     w = u.copy()
-    w = w[0] * w[-1] # Tipo de argumento
+    w = w[0] + w[-1] # Tipo de argumento
     value = fun(w)
     return value
 
 def g(u, fun):
     w = u.copy()
-    w = w[0] * w[-1] # Tipo de argumento
+    w = w[0] + w[-1] # Tipo de argumento
     value = fun(w)
     return value
 
 def u_d(u, fun):
     w = u.copy()
-    w = w[:, 0] * w[:, -1] # Tipo de argumento
-    w = w.reshape((np.size(u, 0), 1))
+    w = np.sum(w, axis=1)
+    w = w.reshape((len(u), 1))
     value = fun(w)
     return value
 
@@ -73,11 +73,13 @@ def show(elements4, coordinates, u):
 
 def show2d(u, p):
     matrixCalor = []
+
     while u.size > 0:
         matrixCalor.append(u[:p+1])
         u = u[p+1:]
 
     ax = sns.heatmap(matrixCalor, linewidth=0.01,cmap="Spectral_r",  cbar_kws={'label': 'Temperatura °C'})
+    ax.invert_yaxis()
     plt.show()
 
 def neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l):
