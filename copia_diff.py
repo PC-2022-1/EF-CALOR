@@ -96,4 +96,4 @@ def animate(k):
   plotheatmap(U[k,:,:], k)
 
 anim = animation.FuncAnimation(plt.figure(), animate, interval=1, frames=nt-1, repeat=False)
-plt.show()
+anim.save("Animation.gif")
