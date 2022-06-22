@@ -14,13 +14,20 @@ def uniform_mesh(d1,d2,p,m,element_type):
     a = d1/p    #incremento horizontal #a= d1/p
     b = d2/m    #incremento vertical  #b= d2/m
     
-    n = 0       #permite ir por las filas en listaNodos
-    for i in range(1,m+2):
-        for j in range(1,p+2):
-            listaNodos[n,0] = esquinas[0,0] + (j-1)*a      #incrementos en x
-            listaNodos[n,1] = esquinas[0,1] + (i-1)*b      #incrementos en y
-            n+=1
-        #print(listaNodos)
+    Nodes= []
+    for y in np.linspace(0,d2,m+1):
+        for x in np.linspace(0,d1,p+1):
+            Nodes.append([x,y])
+
+    listaNodos = np.array(Nodes)
+
+    # n = 0       #permite ir por las filas en listaNodos
+    # for i in range(1,m+2):
+    #     for j in range(1,p+2):
+    #         listaNodos[n,0] = 0 + (j-1)*a      #incrementos en x
+    #         listaNodos[n,1] = 0 + (i-1)*b      #incrementos en y
+    #         n+=1
+    #     #print(listaNodos)
     
     #----------------------ELEMENTOS---------------------------#
     listaElementos = np.zeros([numeroDeElementos,nodosPorElemento])
