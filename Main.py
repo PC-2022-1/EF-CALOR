@@ -3,6 +3,7 @@ from tkinter import*
 from tkinter import ttk
 import os
 import sys
+from click import command
 
 from matplotlib.pyplot import clf
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -51,14 +52,14 @@ def galerkin():
     #Button(Gal,text="Button2").grid()
     var_gen_calor= StringVar()
 
-
     label_calor= Label(Gal, text= "Generación de calor: ")
     label_calor.grid(row=0,column=0,padx=10, pady=10)
 
     combo_calor= ttk.Combobox(Gal,state='readonly',values=['True','False'],textvariable=var_gen_calor)
     combo_calor.grid(row=0,column=1,columnspan=1, padx=10, pady=10)
 
-    #if var_gen_calor.get()=='Generación de calor':
+    if var_gen_calor.get() == True:
+        os.system(f'python heat.py {var_l.get()} {var_w.get()} {var_p.get()} {var_m.get()} {var_tipo_el.get()}')
 
     label_A= Label(Gal, text= "Lado A: ")
     label_B= Label(Gal, text= "Lado B: ")
