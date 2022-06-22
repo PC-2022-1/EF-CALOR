@@ -114,3 +114,4 @@ def graph_mesh(element_type,listaNodos,listaElementos):
         count+=1
 
     plt.show()
+    
