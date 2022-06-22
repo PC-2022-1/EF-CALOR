@@ -14,7 +14,7 @@ p = int(sys.argv[3]) # Divisiones en x=20
 m = int(sys.argv[4]) # Divisiones en y=20
 
 # Type Parameters
-tipoDeElemento = 'TRIANGULO'
+tipoDeElemento = str(sys.argv[5]) #'TRIANGULO'
 
 # Behaviour Parameters
 f_fun = lambda x : 0
