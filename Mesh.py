@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 def uniform_mesh(d1,d2,p,m,element_type):
     dimension = 2
     esquinas = np.array([[0,0],[d1,0],[0,d2],[d1,d2]]) #Arreglo de arreglos con las 4 esquinas
-    #print(esquinas)
+    print(esquinas)
     numeroDeNodos       =(p+1)*(m+1)
     numeroDeElementos   =p*m
     nodosPorElemento    =4 #La base son los cuadrados, por lo que inicialmente este numero es 4
