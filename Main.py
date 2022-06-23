@@ -5,7 +5,6 @@ import os
 import sys
 from anyio import open_file
 from click import command
-from PIL import Image
 
 from matplotlib.pyplot import clf
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -195,18 +194,12 @@ def diferenciasFinitas():
     entrada_g2.grid(row=6, column=1, columnspan=1, padx=10, pady=10)
     entrada_g3.grid(row=7, column=1, columnspan=1, padx=10, pady=10)
     entrada_g4.grid(row=8, column=1, columnspan=1, padx=10, pady=10)
-    def graph():  
-        print("careverga")      
-        
+    
     def cendif_run():
         os.system(f'python cendif.py {var_l.get()} {var_w.get()} {var_t.get()} {var_c.get()} {var_p.get()} {var_m.get()} {var_nt.get()} {var_f.get()} {var_g1.get()} {var_g2.get()} {var_g3.get()} {var_g4.get()}')
-        button2= Button(Difer, text="graficar", borderwidth=3, command=graph,justify="center")#Creamos el boton
-        button2.grid(row=11,column=1,padx=10, pady=10)
-        button2.config(cursor="hand2")
     button= Button(Difer, text="generar", borderwidth=3, command=cendif_run,justify="center")#Creamos el boton
     button.grid(row=10,column=1,padx=10, pady=10)
     button.config(cursor="hand2")
-    Difer.mainloop()
     Difer.mainloop()
 
 #texto informativo

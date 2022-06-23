@@ -76,8 +76,9 @@ xf = float(sys.argv[1]); yf = float(sys.argv[2]); tf = float(sys.argv[3]); c = f
 nx = int(sys.argv[5]); ny = int(sys.argv[6]); nt = int(sys.argv[7])
 
 U = cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt)
+u_max = U.max()
 
-def plotheatmap(u_k, k):
+def plotheatmap(u_k, k, u_max):
   # Clear the current plot figure
     hx = xf / (nx-1) # Tamaño de intervalo x
     hy = yf / (ny - 1)
@@ -88,16 +89,18 @@ def plotheatmap(u_k, k):
     plt.ylabel("Nodos y")
   
     # This is to plot u_k (u at time-step k)
-    plt.pcolormesh(u_k, cmap=plt.cm.jet, vmin=0, vmax=100)
-    plt.colorbar()
+    plt.pcolormesh(u_k, cmap=plt.cm.Spectral_r, vmin=0, vmax=u_max)
+ 
   
     return plt
 
 def animate(k):
-  plotheatmap(U[k,:,:], k)
+  plotheatmap(U[k,:,:], k,u_max)
+  plt.colorbar()
 
-plt.pcolormesh(U[-1,:,:], cmap=plt.cm.jet, vmin= 0, vmax= 100)
-plt.colorbar()
+plt.pcolormesh(U[-1,:,:], cmap=plt.cm.Spectral_r, vmin= 0, vmax= u_max)
+
 
 anim = animation.FuncAnimation(plt.figure(), animate, interval=1, frames=nt-1, repeat=False)
 out = anim.save("heat_equation_solution.gif")
+plt.show()
