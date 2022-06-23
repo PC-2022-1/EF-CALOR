@@ -6,12 +6,13 @@ import pandas as pd
 from Mesh import * #Archivo donde esta la función para generar malla y para graficar
 from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  diff, Eq, Matrix
 from sympy import *
-from GalerkinFuntion import *
+#from GalerkinFuntion import *
 from GalerkinFunRect import *
 from numpy import *
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import seaborn as sns
+import sys
 
 
 def GalerkinResult(dataFrameList):
@@ -79,39 +80,39 @@ def GalerkinResult(dataFrameList):
   # plt.show()
 #from GalerkinFuntionNormalizado import *
 
-l = 4 #Distancia en x
+l = float(sys.argv[1]) #Distancia en x
 #l=symbols('l')
-w = 4 #Distancia en y
+w = float(sys.argv[2]) #Distancia en y
 #w=symbols('w')
-p = 2  #Divisiones en x
-m = 2  #Divisiones en y
+p = int(sys.argv[3])  #Divisiones en x
+m = int(sys.argv[4])  #Divisiones en y
 
 #Definicion de condiciones iniciales
 
 #kx=symbols('kx')
-kx=1.2 #k conductividad en y
+kx=float(sys.argv[5]) #k conductividad en y
 #ky=symbols('kx')
-ky=1.2 #k conductividad en X
+ky=float(sys.argv[6]) #k conductividad en X
 
 #Para caso donde la superficie es fuente de calor
 #h=symbols('h')
-h=20 #h Coeficiente de conveccion h=-20
+h=float(sys.argv[7]) #h Coeficiente de conveccion h=-20
 #Tf=symbols('Tf')
-Tf=30 #Tf Temperatura del aire  Tf=100
+Tf=float(sys.argv[8]) #Tf Temperatura del aire  Tf=100
 #q=symbols('q')
-q=1000 #q Flujo especifico de calor Vatios/m3   q=-100 
+q=float(sys.argv[9]) #q Flujo especifico de calor Vatios/m3   q=-100 
 
 
 elemLength = l/p #Largo del elemento
 elemWidth = w/m  #Ancho del elemento
 tipoDeElemento = 'CUADRADO' #Puede ser elemento tipo 'TRIANGULO' o 'CUADRADO'
-listaLadosConv=[False,True,True,True] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
+listaLadosConv=[eval(sys.argv[10]),eval(sys.argv[11]),eval(sys.argv[12]),eval(sys.argv[13])] #Lados i-j, j-m, m-n, n-i Lista con lados con conv
 
 
 #Se genera la lista NL ("Node list") que contiene las coordenadas de cada nodo
 #y EL("Element list") que contiene la lista de nodos de cada elemento
 NL,EL = uniform_mesh(l, w, p, m, tipoDeElemento) # Generar malla
-graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
+#graph_mesh(tipoDeElemento,NL,EL) #Graficar malla
 
 print(NL)
 print(EL)
@@ -123,6 +124,6 @@ for i in range (0, len(EL)):
 
 matrixCalor = GalerkinResult(dataFrameList) #GalerkinResult organiza, combina y reduce los dataframes, los convierte en matrices 
 #y se encuentra la solución al sistema de ecuaciones que se guarda en una matriz solución (matrixCalor)
-ax = sns.heatmap(matrixCalor, linewidth=0.5,cmap="jet")
+ax = sns.heatmap(matrixCalor, linewidth=0.5,cmap="Spectral_r")
 ax.invert_yaxis()
 plt.show()

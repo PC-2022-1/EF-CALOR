@@ -3,15 +3,16 @@ from numpy import *
 from Mesh import *
 from heatFunction import *
 from scipy.sparse import *
+import sys
 
 # Parametros para el mallado
-l = 4 # Distancia en x
-w = 4 # Distancia en y
-p = 30 # Divisiones en x
-m = 30 # Divisiones en y
+l = float(sys.argv[1]) # Distancia en x
+w = float(sys.argv[2]) # Distancia en y
+p = int(sys.argv[3])  #Divisiones en x
+m = int(sys.argv[4]) # Divisiones en y
 
 # Tipo de elemento
-tipoDeElemento = 'TRIANGULO'
+tipoDeElemento = str(sys.argv[5])
 
 # Parametros de comportamientos
 f_fun = lambda x : 0 #Funcion laplacianoU=f
@@ -38,7 +39,7 @@ else:
 # Se generan listas que contienen condiciones 
 # Tipo de condicion de frontera: Lado inferior, derecho, superior, izquierdo 
 # Si es True es Neumann, si es False es dirichlet
-condicionesDeFrontera = [True, False, True, False] 
+condicionesDeFrontera = [eval(sys.argv[6]), eval(sys.argv[7]), eval(sys.argv[8]), eval(sys.argv[9])] 
 neumann,dirichlet = neumannOrDirichlet(condicionesDeFrontera, EL, NL, w, l)
 
 

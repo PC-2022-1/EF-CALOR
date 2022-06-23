@@ -8,6 +8,7 @@ de pruebas con dependencia temporal en 2 dimensión.
 from numpy import *
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import sys
 
 def cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt):
 
@@ -71,8 +72,8 @@ g2 = lambda y : 25 # Frontera y = b
 g3 = lambda x : 25 # Frontera x = 0
 g4 = lambda x : 25 # Frontera x = a
 
-xf = 10; yf = 100; tf = 100; c = 2
-nx = 60; ny = 60; nt = 300
+xf = float(sys.argv[1]); yf = float(sys.argv[2]); tf = float(sys.argv[3]); c = float(sys.argv[4])
+nx = int(sys.argv[5]); ny = int(sys.argv[6]); nt = int(sys.argv[7])
 
 U = cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt)
 
