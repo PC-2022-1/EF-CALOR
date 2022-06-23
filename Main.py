@@ -3,7 +3,6 @@ from tkinter import*
 from tkinter import ttk
 import os
 import sys
-from anyio import open_file
 from click import command
 
 from matplotlib.pyplot import clf
