@@ -5,7 +5,7 @@
 
 #Se importan librerias
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from Mesh import * #Archivo donde esta la función para generar malla y para graficar
 from sympy import integrate, linear_eq_to_matrix, symbols,simplify,collect,  diff, Eq, Matrix
 from sympy import *
