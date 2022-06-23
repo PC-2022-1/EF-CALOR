@@ -21,3 +21,6 @@ implementation"
 
 - Diferencias finitas
 
+Incluye métodos de diferencias finitas progresivas *fowdiff.py* y diferencias finitas centradas *cendiff.py*, que consiste en una combinación
+lineal entre diferencias progresivas y regresivas. Estos métodos tienen la posibilidad de establecer fronteras númericas y funcionales, describiendo
+frontes tal como se requiera, estas siguen formas de ecuaciones diferenciales de parabolicas, basado en el acercamiento de Mathews al método poisson.
