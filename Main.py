@@ -3,7 +3,9 @@ from tkinter import*
 from tkinter import ttk
 import os
 import sys
+from anyio import open_file
 from click import command
+from PIL import Image
 
 from matplotlib.pyplot import clf
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -35,6 +37,11 @@ var_conv_izquierda = StringVar()
 var_t = DoubleVar()
 var_c = DoubleVar()
 var_nt = IntVar()
+var_f = DoubleVar()
+var_g1 = DoubleVar()
+var_g2 = DoubleVar()
+var_g3 = DoubleVar()
+var_g4 = DoubleVar()
 #definimos la funcion del boton
 def Continuar():
     #boton galerkin
@@ -140,7 +147,6 @@ def galerkin():
             combo_C.grid(row=3,column=1, padx=10, pady=10)
             combo_D.grid(row=4,column=1, padx=10, pady=10)
             def galerkin_false():
-                print(var_conv_abajo.get(),var_conv_derecha.get(),var_conv_arriba.get(),var_conv_izquierda.get())
                 os.system(f'python heat.py {var_l.get()} {var_w.get()} {var_p.get()} {var_m.get()} {var_tipo_el.get()} {var_conv_abajo.get()} {var_conv_derecha.get()} {var_conv_arriba.get()} {var_conv_izquierda.get()}')
             button= Button(Gal, text="generar", borderwidth=3, command=galerkin_false,justify="center")#Creamos el boton
             button.grid(row=10,column=1,padx=10, pady=10)
@@ -154,12 +160,53 @@ def diferenciasFinitas():
     Difer=Toplevel(root)
     Difer.title("Diferencias Finitas")
     Difer.config(bg="#D7ECDE")
-    os.system(f'python cendif.py {var_l.get()} {var_w.get()} {var_t.get()} {var_c.get()} {var_p.get()} {var_m.get()} {var_nt.get()}')
+    label_t= Label(Difer, text= "Tiempo de calentamiento: ")
+    label_c= Label(Difer, text= "constante de calor: ")
+    label_nt= Label(Difer, text= "Divisiones temporales:")
+    label_f= Label(Difer, text= "Estado inicial: ")
+    label_g1= Label(Difer, text= "Frontera en Y incial: ")
+    label_g2= Label(Difer, text= "Frontera en Y final:")
+    label_g3= Label(Difer, text= "Frontera en X inicial: ")
+    label_g4= Label(Difer, text= "Frontera en X final:")
+    
+    label_t.grid(row=1,padx=10, pady=10)
+    label_c.grid(row=2,padx=10, pady=10)
+    label_nt.grid(row=3,padx=10, pady=10)
+    label_f.grid(row=4,padx=10, pady=10)
+    label_g1.grid(row=5,padx=10, pady=10)
+    label_g2.grid(row=6,padx=10, pady=10)
+    label_g3.grid(row=7,padx=10, pady=10)
+    label_g4.grid(row=8,padx=10, pady=10)
 
+    entrada_t=Entry(Difer, textvariable=var_t, borderwidth=3)
+    entrada_c=Entry(Difer, textvariable=var_c, borderwidth=3)
+    entrada_nt=Entry(Difer, textvariable=var_nt, borderwidth=3)
+    entrada_f=Entry(Difer, textvariable=var_f, borderwidth=3)
+    entrada_g1=Entry(Difer, textvariable=var_g1, borderwidth=3)
+    entrada_g2=Entry(Difer, textvariable=var_g2, borderwidth=3)
+    entrada_g3=Entry(Difer, textvariable=var_g3, borderwidth=3)
+    entrada_g4=Entry(Difer, textvariable=var_g4, borderwidth=3)
 
-
-
-
+    entrada_t.grid(row=1, column=1, columnspan=1, padx=10, pady=10)
+    entrada_c.grid(row=2, column=1, columnspan=1, padx=10, pady=10)
+    entrada_nt.grid(row=3, column=1, columnspan=1, padx=10, pady=10)
+    entrada_f.grid(row=4, column=1, columnspan=1, padx=10, pady=10)
+    entrada_g1.grid(row=5, column=1, columnspan=1, padx=10, pady=10)
+    entrada_g2.grid(row=6, column=1, columnspan=1, padx=10, pady=10)
+    entrada_g3.grid(row=7, column=1, columnspan=1, padx=10, pady=10)
+    entrada_g4.grid(row=8, column=1, columnspan=1, padx=10, pady=10)
+    def graph():  
+        print("careverga")      
+        
+    def cendif_run():
+        os.system(f'python cendif.py {var_l.get()} {var_w.get()} {var_t.get()} {var_c.get()} {var_p.get()} {var_m.get()} {var_nt.get()} {var_f.get()} {var_g1.get()} {var_g2.get()} {var_g3.get()} {var_g4.get()}')
+        button2= Button(Difer, text="graficar", borderwidth=3, command=graph,justify="center")#Creamos el boton
+        button2.grid(row=11,column=1,padx=10, pady=10)
+        button2.config(cursor="hand2")
+    button= Button(Difer, text="generar", borderwidth=3, command=cendif_run,justify="center")#Creamos el boton
+    button.grid(row=10,column=1,padx=10, pady=10)
+    button.config(cursor="hand2")
+    Difer.mainloop()
     Difer.mainloop()
 
 #texto informativo
@@ -168,8 +215,8 @@ label1.grid(row=2,padx=10, pady=10)
 
 #entrada del usuario  ingresada como variable
 
-label_l= Label(root, text= "Tamaño x,y: ") #asigna los valores  a GALERKINTEST.PY
-label_p= Label(root, text= "Divisiones en  x,y: ")
+label_l= Label(root, text= "Tamaño X & Y: ") #asigna los valores  a GALERKINTEST.PY
+label_p= Label(root, text= "Divisiones en  X & Y: ")
 
 label_l.grid(row=3,padx=10, pady=10)
 label_p.grid(row=4,padx=10, pady=10)

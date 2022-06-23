@@ -66,11 +66,11 @@ def cendif(f, g1, g2, g3, g4, xf, yf, tf, c, nx, ny, nt):
     return U
 
 # --- X = [x, y, t] : Vector de variables --- #
-f = lambda x : 100 # Estado Inicial
-g1 = lambda y : 25 # Frontera y = 0
-g2 = lambda y : 25 # Frontera y = b
-g3 = lambda x : 25 # Frontera x = 0
-g4 = lambda x : 25 # Frontera x = a
+f = lambda x : float(sys.argv[8]) # Estado Inicial
+g1 = lambda y : float(sys.argv[9]) # Frontera y = 0
+g2 = lambda y : float(sys.argv[10]) # Frontera y = b
+g3 = lambda x : float(sys.argv[11]) # Frontera x = 0
+g4 = lambda x : float(sys.argv[12]) # Frontera x = a
 
 xf = float(sys.argv[1]); yf = float(sys.argv[2]); tf = float(sys.argv[3]); c = float(sys.argv[4])
 nx = int(sys.argv[5]); ny = int(sys.argv[6]); nt = int(sys.argv[7])
@@ -98,7 +98,6 @@ def animate(k):
 
 plt.pcolormesh(U[-1,:,:], cmap=plt.cm.jet, vmin= 0, vmax= 100)
 plt.colorbar()
-plt.show()
 
 anim = animation.FuncAnimation(plt.figure(), animate, interval=1, frames=nt-1, repeat=False)
 out = anim.save("heat_equation_solution.gif")
